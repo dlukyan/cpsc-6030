@@ -2,3 +2,6 @@
 scripts/bin
 scripts/include
 scripts/lib
+.idea
+node_modules
+build
