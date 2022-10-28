@@ -111,6 +111,12 @@ const common = {
     alignItems: 'center',
     justifyContent: 'center',
   },
+  vizContainer: (gridArea: string) => ({
+    gridArea,
+    padding: 10,
+    border: '1px solid black',
+    ...common.flexBox,
+  }),
 }
 
 export const useGlobalStyles = createUseStyles({

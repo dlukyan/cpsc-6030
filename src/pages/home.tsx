@@ -1,39 +1,39 @@
-import React, { useState } from 'react'
-import { Background } from '../components/background'
+import React from 'react'
 import { createUseStyles } from 'react-jss'
 import { Theme } from '../theme'
+import { Map } from '../components/widgets/map'
+import { ScatterPlot } from '../components/widgets/scatter-plot'
+import { GenderIncomeBarchart } from '../components/widgets/gender-income-barchart'
+import { CameraDotChart } from '../components/widgets/camera-dot-chart'
+import { GeographyArc } from '../components/widgets/geography-arc'
+import { AttackArc } from '../components/widgets/attack-arc'
+import { PartyKillingsCircle } from '../components/widgets/party-killings-circle'
 
 const useStyles = createUseStyles((theme: Theme) => ({
-  homePageContentContainer: {
-    ...theme.common.flexBox,
-    flexDirection: 'column',
-    gap: '1em',
+  container: {
+    width: '100vw',
+    height: '100vh',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(20, 1fr)',
+    gridTemplateRows: 'repeat(5, 1fr)',
   },
   title: {
     ...theme.typography.largest,
-  },
-  count: {
-    ...theme.typography.medium,
-  },
-  button: {
-    ...theme.elements.button,
-    color: theme.colors.white,
-    backgroundColor: theme.colors.darkGray,
-    padding: 10,
   },
 }))
 
 export const HomePage: React.FC = () => {
   const classes = useStyles()
-  const [counter, setCounter] = useState<number>(0)
 
   return (
-    <Background contentClassName={classes.homePageContentContainer}>
-      <h1 className={classes.title}>Home Page</h1>
-      <h2 className={classes.count}>Count: {counter.toString()}</h2>
-      <button className={classes.button} onClick={() => setCounter(counter + 1)}>
-        Click Me!
-      </button>
-    </Background>
+    <div className={classes.container}>
+      <Map />
+      <ScatterPlot />
+      <GenderIncomeBarchart />
+      <CameraDotChart />
+      <GeographyArc />
+      <AttackArc />
+      <PartyKillingsCircle />
+    </div>
   )
 }
