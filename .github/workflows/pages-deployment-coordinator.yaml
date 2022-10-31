@@ -1,0 +1,35 @@
+name: Pages Deployment Coordinator 🚢
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  deploy_to_pages:
+    name: Deploy to Pages 🚀
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout V2️⃣
+      - uses: actions/setup-node@v2
+        name: Setup Node ⚛️
+        with:
+          node-version: 14
+          registry-url: https://npm.pkg.github.com
+
+      - run: node --version
+        name: Confirm node is installed ⚛️
+      - run: npm --version
+        name: Confirm NPM is installed 📦
+
+      - run: npm i
+        name: Install Dependencies 🧱
+
+      - run: npm run build
+        name: Build React App 🛠
+
+      - name: Deploy to Github Pages 📑
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./build
