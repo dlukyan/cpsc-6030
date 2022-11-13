@@ -3,6 +3,8 @@ import { createUseStyles } from 'react-jss'
 const colors = {
   darkGray: '#575B65',
   white: '#ffffff',
+  empty: '#b0b0b0',
+  primary: '#ff9c61',
 }
 
 const maxWidthMedia = (size: number) => `@media screen and (max-width: ${size}px)`
