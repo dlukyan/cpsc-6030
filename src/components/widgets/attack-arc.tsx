@@ -84,7 +84,9 @@ export const AttackArc: React.FC = () => {
           .startAngle(-90 * (Math.PI / 180))
           .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
       )
-      .attr('fill', theme.colors.primary)
+      .attr("fill", theme.colors.primary)
+      .transition()
+      .duration(1500)
   }, [dimensions.height, dimensions.width, percentage])
 
   return (
