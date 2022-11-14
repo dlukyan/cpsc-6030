@@ -4,7 +4,9 @@ const colors = {
   darkGray: '#575B65',
   white: '#ffffff',
   empty: '#b0b0b0',
-  primary: '#ff9c61',
+  primary: '#ff8037',
+  primaryLight: '#ffa26e',
+  secondary: '#8274ff',
 }
 
 const maxWidthMedia = (size: number) => `@media screen and (max-width: ${size}px)`

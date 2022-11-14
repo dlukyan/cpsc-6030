@@ -10,23 +10,17 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.common.vizContainer('5 / 1 / 6 / 6'),
     ...theme.common.flexBox,
     gap: 10,
+    justifyContent: 'space-around',
   },
   text: {
-    ...theme.common.flexBox,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    maxWidth: 100,
+    ...theme.typography.medium,
+    color: theme.colors.darkGray,
+    maxWidth: 120,
   },
   percentage: {
-    ...theme.typography.largest,
     color: theme.colors.primary,
     fontWeight: 'bold',
     fontStyle: 'italic',
-  },
-  info: {
-    ...theme.typography.small,
-    color: theme.colors.darkGray,
   },
 }))
 
@@ -37,10 +31,30 @@ export const CameraDotChart: React.FC = () => {
 
   const dimensions = {
     height: window.innerHeight / 5 - 20,
-    width: window.innerWidth / 4 - 20,
+    width: window.innerWidth / 4 - 120,
   }
 
-  const percentage = Math.round((data.filter(d => d.wapo_body_camera === 'Yes').length / data.length) * 100)
+  const totalDataPoints = data.length
+  const totals = {
+    yes: 0,
+    other: 0,
+  }
+
+  data.map(d => {
+    if (d.wapo_body_camera === 'Yes') totals.yes += 1
+    else if (
+      d.wapo_body_camera === 'Surveillance Video' ||
+      d.wapo_body_camera === 'Dash Cam Video' ||
+      d.wapo_body_camera === 'Vehicle' ||
+      d.wapo_body_camera === 'Bystander Video'
+    )
+      totals.other += 1
+  })
+
+  const percentages = {
+    yes: Math.round((totals.yes / totalDataPoints) * 100),
+    other: Math.round((totals.other / totalDataPoints) * 100),
+  }
 
   useEffect(() => {
     const svgElement = d3
@@ -73,15 +87,24 @@ export const CameraDotChart: React.FC = () => {
       // @ts-ignore
       .attr('cy', d => y(Math.floor(d / 10)))
       .attr('r', 5)
-      .attr('fill', d => (d < percentage ? theme.colors.primary : theme.colors.empty))
-  }, [dimensions.height, dimensions.width, percentage])
+      .attr('fill', d =>
+        d < percentages.yes
+          ? theme.colors.primary
+          : d < percentages.other + percentages.yes
+          ? theme.colors.secondary
+          : theme.colors.empty,
+      )
+  }, [dimensions.height, dimensions.width])
 
   return (
     <div className={classes.container}>
       <svg ref={ref} />
       <div className={classes.text}>
-        <div className={classes.percentage}>{percentage}%</div>
-        <div className={classes.info}>of police killings include an officer wearing a body cam</div>
+        <b className={classes.percentage}>{percentages.yes}%</b> of police killings body cam video, while{' '}
+        <b className={classes.percentage} style={{ color: theme.colors.secondary }}>
+          {percentages.other}%
+        </b>{' '}
+        of included video of another type
       </div>
     </div>
   )
