@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import rawData from '../../data/police_violence_cleaned.json'
+import rawData from '../../data/data_cleansed.json'
 import React, { useEffect, useRef } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'

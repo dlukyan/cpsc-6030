@@ -6,10 +6,9 @@ import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
 
-
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('5 / 11 / 6 / 16'),
+    ...theme.common.vizContainer('5 / 6 / 6 / 11'),
     ...theme.typography.sortOfLarge,
   },
   text: {
@@ -31,7 +30,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }))
 
-export const AttackArc: React.FC = () => {
+export const FleeArc: React.FC = () => {
   const classes = useStyles();
   const ref = useRef(null);
   const data: PoliceViolenceDataPoint[] = rawData as PoliceViolenceDataPoint[];
@@ -41,7 +40,7 @@ export const AttackArc: React.FC = () => {
     width: window.innerWidth / 4 - 20,
   };
 
-  const percentage = Math.round((data.filter(d => d.wapo_threat_level === 'Attack' || d.wapo_threat_level === 'Brandished Weapon').length / data.length) * 100);
+  const percentage = Math.round((data.filter(d => d.wapo_flee === 'Car' || d.wapo_flee === 'Car, Foot' || d.wapo_flee === 'Foot').length / data.length) * 100);
 
   useEffect(() => {
     const svgElement = d3
@@ -92,7 +91,7 @@ export const AttackArc: React.FC = () => {
       <svg ref={ref} />
       <div className={classes.text}>
         <div className={classes.percentage}>{percentage}%</div>
-        <div className={classes.info}>of police killings include a suspect attacking an officer</div>
+        <div className={classes.info}>of police killings include a suspect trying to flee</div>
       </div>
     </div>
   )
