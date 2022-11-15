@@ -48,7 +48,7 @@ export const ScatterPlot: React.FC = () => {
 
   const xScale = d3
     .scaleLinear()
-    .domain([0, Math.max(...data.map(d => Number(d.age)))])
+    .domain([Math.min(...data.map(d => Number(d.age))) / 2, Math.max(...data.map(d => Number(d.age)))])
     .range([dimensions.margin.left, dimensions.width - dimensions.margin.right])
   const yScale = d3
     .scaleLinear()
