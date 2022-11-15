@@ -69,9 +69,30 @@ export const ScatterPlot: React.FC = () => {
       .style('text-anchor', 'end')
 
     svg
+      .append('text')
+      .attr('transform', 'translate(' + dimensions.width / 2 + ' ,' + (dimensions.height - dimensions.margin.top) + ')')
+      // .style("text-anchor", "middle")
+      .style('font-size', 14)
+      .text('Age')
+
+    svg
       .append('g')
       .call(d3.axisLeft(yScale).tickFormat(d => (d === 0 ? d : d / 1000 + 'K')))
       .attr('transform', 'translate(' + dimensions.margin.left + ', ' + -dimensions.margin.bottom + ')')
+
+    svg
+      .append('text')
+      .attr(
+        'transform',
+        'translate(' +
+          dimensions.margin.right +
+          ' ,' +
+          (dimensions.height - dimensions.margin.bottom) / 2 +
+          ') rotate(-90)',
+      )
+      .style('text-anchor', 'middle')
+      .style('font-size', 14)
+      .text('Household average income')
 
     svg
       .append('g')
