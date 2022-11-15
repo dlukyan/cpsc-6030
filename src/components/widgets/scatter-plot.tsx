@@ -27,7 +27,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   info: {
     ...theme.typography.small,
     color: theme.colors.darkGray,
-  }
+  },
 }))
 
 export const ScatterPlot: React.FC = () => {
@@ -65,12 +65,12 @@ export const ScatterPlot: React.FC = () => {
       .call(d3.axisBottom(xScale)) //.tickValues(xScale.domain().filter(function (d, i) { return !(i % 5) })))
       .attr('transform', 'translate(0, ' + (dimensions.height - dimensions.margin.bottom) + ')')
       .selectAll('text')
-      .attr('transform', 'translate(' + -dimensions.margin.right + ', 4) rotate(-65)')
+      .attr('transform', 'translate(' + dimensions.margin.right / 2 + ', 4)')
       .style('text-anchor', 'end')
 
     svg
       .append('g')
-      .call(d3.axisLeft(yScale))
+      .call(d3.axisLeft(yScale).tickFormat(d => (d === 0 ? d : d / 1000 + 'K')))
       .attr('transform', 'translate(' + dimensions.margin.left + ', ' + -dimensions.margin.bottom + ')')
 
     svg
