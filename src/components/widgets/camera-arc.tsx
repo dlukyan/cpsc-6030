@@ -22,6 +22,7 @@ export const CameraArc: React.FC = () => {
       text={'of police killings include an officer wearing a body cam'}
       dimensions={dimensions}
       gridArea={gridArea}
+      id={'camera-arc'}
     />
   )
 }

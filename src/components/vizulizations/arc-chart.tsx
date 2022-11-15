@@ -23,23 +23,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
-  // text: {
-  //   ...theme.common.flexBox,
-  //   flexDirection: 'column',
-  //   alignItems: 'flex-start',
-  //   justifyContent: 'space-between',
-  //   maxWidth: 100,
-  // },
-  // percentage: {
-  //   ...theme.typography.largest,
-  //   color: theme.colors.primary,
-  //   fontWeight: 'bold',
-  //   fontStyle: 'italic',
-  // },
-  // info: {
-  //   ...theme.typography.small,
-  //   color: theme.colors.darkGray,
-  // },
 }))
 
 export const ArcChart: React.FC<{
@@ -47,8 +30,10 @@ export const ArcChart: React.FC<{
   text: string
   dimensions: { height: number; width: number }
   gridArea: string
-}> = ({ percentage, text, dimensions, gridArea }) => {
+  id: string
+}> = ({ percentage, text, dimensions, gridArea, id }) => {
   const classes = useStyles()
+
   const ref = useRef(null)
 
   useEffect(() => {
@@ -75,6 +60,7 @@ export const ArcChart: React.FC<{
     container
       .append('path')
       .attr('class', 'arc')
+      .attr('id', `${id}-arc`)
       .attr(
         'd',
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -87,6 +73,36 @@ export const ArcChart: React.FC<{
           .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
       )
       .attr('fill', theme.colors.primary)
+      .on('mouseover', function () {
+        d3.select(this).attr(
+          'd',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          d3
+            .arc()
+            .innerRadius(65)
+            .outerRadius(110)
+            .startAngle(-90 * (Math.PI / 180))
+            .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+        )
+
+        d3.select(`text#${id}-text`).attr('font-size', theme.typography.largest.fontSize - 5)
+      })
+      .on('mouseout', function () {
+        d3.select(this).attr(
+          'd',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          d3
+            .arc()
+            .innerRadius(70)
+            .outerRadius(105)
+            .startAngle(-90 * (Math.PI / 180))
+            .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+        )
+
+        d3.select(`text#${id}-text`).attr('font-size', theme.typography.largest.fontSize)
+      })
       .transition()
       .duration(1500)
 
@@ -96,9 +112,41 @@ export const ArcChart: React.FC<{
       .attr('font-size', theme.typography.largest.fontSize)
       .attr('font-weight', 'bold')
       .attr('font-style', 'italic')
+      .attr('id', `${id}-text`)
       .style('fill', theme.colors.primary)
       .style('text-anchor', 'middle')
+      .style('cursor', 'default')
       .attr('y', -10)
+      .on('mouseover', function () {
+        d3.select(this).attr('font-size', theme.typography.largest.fontSize - 5)
+
+        d3.select(`path#${id}-arc`).attr(
+          'd',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          d3
+            .arc()
+            .innerRadius(65)
+            .outerRadius(110)
+            .startAngle(-90 * (Math.PI / 180))
+            .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+        )
+      })
+      .on('mouseout', function () {
+        d3.select(this).attr('font-size', theme.typography.largest.fontSize)
+
+        d3.select(`path#${id}-arc`).attr(
+          'd',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          d3
+            .arc()
+            .innerRadius(70)
+            .outerRadius(105)
+            .startAngle(-90 * (Math.PI / 180))
+            .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+        )
+      })
   }, [dimensions.height, dimensions.width, percentage])
 
   return (
