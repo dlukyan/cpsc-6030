@@ -70,6 +70,10 @@ const typography = {
     fontSize: 40,
     ...baseTypography,
   },
+  moreLarge: {
+    fontSize: 56,
+    ...baseTypography,
+  },
   extraLarge: {
     fontSize: 68,
     ...baseTypography,
@@ -114,6 +118,12 @@ const common = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  centerAbsolute: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
   },
   vizContainer: (gridArea: string) => ({
     gridArea,

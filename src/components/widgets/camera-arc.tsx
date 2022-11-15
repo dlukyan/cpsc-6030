@@ -4,7 +4,7 @@ import React from 'react'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
 import { ArcChart } from '../vizulizations/arc-chart'
 
-export const AttackArc: React.FC = () => {
+export const CameraArc: React.FC = () => {
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
@@ -12,18 +12,14 @@ export const AttackArc: React.FC = () => {
     width: window.innerWidth / 4 - 20,
   }
 
-  const percentage = Math.round(
-    (data.filter(d => d.wapo_threat_level === 'Attack' || d.wapo_threat_level === 'Brandished Weapon').length /
-      data.length) *
-      100,
-  )
+  const percentage = Math.round((data.filter(d => d.wapo_body_ccamera === 'Yes').length / data.length) * 100)
 
-  const gridArea = '5 / 11 / 6 / 16'
+  const gridArea = '5 / 1 / 6 / 6'
 
   return (
     <ArcChart
       percentage={percentage}
-      text={'of police killings include a suspect attacking an officer'}
+      text={'of police killings include an officer wearing a body cam'}
       dimensions={dimensions}
       gridArea={gridArea}
     />

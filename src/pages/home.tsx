@@ -4,7 +4,7 @@ import { Theme } from '../theme'
 import { Map } from '../components/widgets/map'
 import { ScatterPlot } from '../components/widgets/scatter-plot'
 import { GenderIncomeBarchart } from '../components/widgets/gender-income-barchart'
-import { CameraDotChart } from '../components/widgets/camera-dot-chart'
+import { CameraArc } from '../components/widgets/camera-arc'
 import { FleeArc } from '../components/widgets/flee-arc'
 import { AttackArc } from '../components/widgets/attack-arc'
 import { PartyKillingsCircle } from '../components/widgets/party-killings-circle'
@@ -30,7 +30,7 @@ export const HomePage: React.FC = () => {
       <Map />
       <ScatterPlot />
       <GenderIncomeBarchart />
-      <CameraDotChart />
+      <CameraArc />
       <FleeArc />
       <AttackArc />
       <PartyKillingsCircle />
