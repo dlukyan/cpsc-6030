@@ -27,7 +27,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   info: {
     ...theme.typography.small,
     color: theme.colors.darkGray,
-  },
+  }
 }))
 
 export const ScatterPlot: React.FC = () => {
