@@ -125,10 +125,21 @@ const common = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
   },
-  vizContainer: (gridArea: string) => ({
+  vizContainer: (gridArea: string, origin: string, scale: number) => ({
+    cursor: 'pointer',
+    backgroundColor: 'white',
     gridArea,
+    '&:hover': {
+      zIndex: 100,
+      scale: scale,
+      transition: 'scale 0.5s ease-out, box-shadow 0.5s ease',
+      transformOrigin: origin,
+      boxShadow: `1px 1px 50px 5px ${theme.colors.darkGray}`,
+      border: 'none',
+    },
+    transition: 'scale 0.5s ease-out, box-shadow 0.5s ease',
     padding: 10,
-    border: '1px solid black',
+    border: `1px solid ${theme.colors.empty}`,
     ...common.flexBox,
   }),
 }

@@ -3,22 +3,22 @@ import rawData from '../../data/data_cleansed.json'
 
 import React, { useEffect, useRef } from 'react'
 import { createUseStyles } from 'react-jss'
-import { theme, Theme } from '../../theme'
+import { Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('4 / 16 / 6 / 21'),
+    ...theme.common.vizContainer('4 / 16 / 6 / 21', 'bottom right', 1.02),
     ...theme.typography.sortOfLarge,
     flexDirection: 'column',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
   },
   text: {
     ...theme.common.flexBox,
     // alignItems: 'flex-start',
     // justifyContent: 'space-between',
     textAlign: 'center',
-    fontSize: theme.typography.small.fontSize
+    fontSize: theme.typography.small.fontSize,
   },
   percentage: {
     ...theme.typography.largest,
@@ -35,7 +35,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export const PartyKillingsCircle: React.FC = () => {
   const classes = useStyles()
   const ref = useRef(null)
-  const data: PoliceViolenceDataPoint[] = rawData as PoliceViolenceDataPoint[]
+  const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
     height: window.innerHeight / 3.1,
@@ -45,7 +45,7 @@ export const PartyKillingsCircle: React.FC = () => {
       bottom: 20,
       right: 10,
       left: 50,
-    }
+    },
   }
 
   const pData = {
@@ -54,23 +54,25 @@ export const PartyKillingsCircle: React.FC = () => {
   }
 
   useEffect(() => {
-    const svgElement = d3
-      .select(ref.current)
-      .attr('width', dimensions.width)
-      .attr('height', dimensions.height)
+    const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
 
-    const color = d3.scaleOrdinal()
-      .range(['blue', 'red']);
+    const color = d3.scaleOrdinal().range(['blue', 'red'])
 
     const pie = d3.pie().value(function (d) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       return d[1]
-    });
-    const data_ready = pie(Object.entries(pData));
+    })
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const data_ready = pie(Object.entries(pData))
 
-    const container = svgElement.append('g')
-      .attr('transform', 'translate(' + dimensions.width / 2 + ', ' + dimensions.height/ 2 + ')')
+    const container = svgElement
+      .append('g')
+      .attr('transform', 'translate(' + dimensions.width / 2 + ', ' + dimensions.height / 2 + ')')
 
-    const arcGenerator = d3.arc()
+    const arcGenerator = d3
+      .arc()
       .innerRadius(0)
       .outerRadius(dimensions.height / 2)
 
@@ -78,8 +80,17 @@ export const PartyKillingsCircle: React.FC = () => {
       .selectAll('mySlices')
       .data(data_ready)
       .join('path')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+
       .attr('d', arcGenerator)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+
       .attr('fill', function (d) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+
         return color(d.data[1])
       })
       // .attr("stroke", "black")
@@ -94,9 +105,13 @@ export const PartyKillingsCircle: React.FC = () => {
       .enter()
       .append('text')
       .text(function (d) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return d.data[0]
       })
       .attr('transform', function (d) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return 'translate(' + arcGenerator.centroid(d) + ')'
       })
       .style('text-anchor', 'middle')
@@ -107,7 +122,7 @@ export const PartyKillingsCircle: React.FC = () => {
   return (
     <div className={classes.container}>
       <svg ref={ref} />
-      <div className={classes.text}>police killing location's party dominance</div>
+      <div className={classes.text}>police killing location&apos;s party dominance</div>
     </div>
   )
 }

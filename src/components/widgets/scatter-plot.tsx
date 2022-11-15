@@ -8,7 +8,7 @@ import { PoliceViolenceDataPoint } from '../../types/police-violence'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('1 / 13 / 4 / 21'),
+    ...theme.common.vizContainer('1 / 13 / 4 / 21', 'top right', 1.015),
     ...theme.typography.sortOfLarge,
   },
   text: {
@@ -77,6 +77,8 @@ export const ScatterPlot: React.FC = () => {
 
     svg
       .append('g')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .call(d3.axisLeft(yScale).tickFormat(d => (d === 0 ? d : d / 1000 + 'K')))
       .attr('transform', 'translate(' + dimensions.margin.left + ', ' + -dimensions.margin.bottom + ')')
 

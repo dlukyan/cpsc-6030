@@ -1,6 +1,5 @@
 import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
-import topology from '../../data/us_states.topojson'
 
 import React, { useEffect, useRef } from 'react'
 import { createUseStyles } from 'react-jss'
@@ -9,7 +8,7 @@ import { PoliceViolenceDataPoint } from '../../types/police-violence'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('1 / 1 / 4 / 13'),
+    ...theme.common.vizContainer('1 / 1 / 4 / 13', 'top left', 1.015),
     ...theme.typography.sortOfLarge,
   },
   text: {
@@ -28,13 +27,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   info: {
     ...theme.typography.small,
     color: theme.colors.darkGray,
-  }
+  },
 }))
 
 export const Map: React.FC = () => {
   const classes = useStyles()
   const ref = useRef(null)
-  const data: PoliceViolenceDataPoint[] = rawData as PoliceViolenceDataPoint[]
+  const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
     height: window.innerHeight / 5 - 20,
@@ -52,21 +51,25 @@ export const Map: React.FC = () => {
       .attr('width', dimensions.width - 100)
       .attr('height', dimensions.height)
 
-    var projection = d3.geoAlbersUsa()
-      .scale(dimensions.width)
-      .translate([dimensions.width / 2, dimensions.height / 2]);
-    var path = d3.geoPath()
-      .projection(projection);
-    var viewboxwidth = dimensions.width * 1;
-    var viewboxheight = dimensions.height - 20;
+    // const projection = d3
+    //   .geoAlbersUsa()
+    //   .scale(dimensions.width)
+    //   .translate([dimensions.width / 2, dimensions.height / 2])
+    // const path = d3.geoPath().projection(projection)
+    // const viewboxwidth = dimensions.width * 1
+    // const viewboxheight = dimensions.height - 20
 
-    const data = d3.range(100)
+    // const data = d3.range(100)
 
     const color = d3.scaleOrdinal().range(['blue', 'red'])
 
     const pie = d3.pie().value(function (d) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       return d[1]
     })
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const data_ready = pie(Object.entries(pData))
 
     const container = svgElement.append('g').attr('transform', 'translate(80, 80)')
@@ -77,8 +80,14 @@ export const Map: React.FC = () => {
       .selectAll('mySlices')
       .data(data_ready)
       .join('path')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .attr('d', arcGenerator)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .attr('fill', function (d) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return color(d.data[1])
       })
       // .attr("stroke", "black")
@@ -93,9 +102,13 @@ export const Map: React.FC = () => {
       .enter()
       .append('text')
       .text(function (d) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return d.data[0]
       })
       .attr('transform', function (d) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return 'translate(' + arcGenerator.centroid(d) + ')'
       })
       .style('text-anchor', 'middle')
