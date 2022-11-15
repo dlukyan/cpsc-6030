@@ -7,6 +7,8 @@ const colors = {
   primary: '#ff8037',
   primaryLight: '#ffa26e',
   secondary: '#8274ff',
+  blue: '#3661ff',
+  red: '#f84040',
 }
 
 const maxWidthMedia = (size: number) => `@media screen and (max-width: ${size}px)`
