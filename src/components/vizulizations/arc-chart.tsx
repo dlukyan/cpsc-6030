@@ -10,6 +10,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.common.flexBox,
     flexDirection: 'column',
     gap: 5,
+    '& svg > g > path': {
+      transition: 'all 0.25s ease-in-out',
+    },
+    '& svg > g > text': {
+      transition: 'all 0.25s ease-in-out',
+    },
   },
   text: {
     ...theme.typography.small,
