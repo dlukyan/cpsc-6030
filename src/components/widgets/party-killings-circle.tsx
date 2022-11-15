@@ -3,20 +3,22 @@ import rawData from '../../data/data_cleansed.json'
 
 import React, { useEffect, useRef } from 'react'
 import { createUseStyles } from 'react-jss'
-import { Theme } from '../../theme'
+import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     ...theme.common.vizContainer('4 / 16 / 6 / 21'),
     ...theme.typography.sortOfLarge,
+    flexDirection: 'column',
+    justifyContent: 'space-around'
   },
   text: {
     ...theme.common.flexBox,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    maxWidth: 100,
+    // alignItems: 'flex-start',
+    // justifyContent: 'space-between',
+    textAlign: 'center',
+    fontSize: theme.typography.small.fontSize
   },
   percentage: {
     ...theme.typography.largest,
@@ -36,8 +38,14 @@ export const PartyKillingsCircle: React.FC = () => {
   const data: PoliceViolenceDataPoint[] = rawData as PoliceViolenceDataPoint[]
 
   const dimensions = {
-    height: window.innerHeight / 5 - 20,
-    width: window.innerWidth / 4 - 20,
+    height: window.innerHeight / 3.1,
+    width: window.innerWidth / 4.5,
+    margin: {
+      top: 10,
+      bottom: 20,
+      right: 10,
+      left: 50,
+    }
   }
 
   const pData = {
@@ -48,21 +56,23 @@ export const PartyKillingsCircle: React.FC = () => {
   useEffect(() => {
     const svgElement = d3
       .select(ref.current)
-      .attr('width', dimensions.width - 100)
+      .attr('width', dimensions.width)
       .attr('height', dimensions.height)
 
-    const data = d3.range(100)
-
-    const color = d3.scaleOrdinal().range(['blue', 'red'])
+    const color = d3.scaleOrdinal()
+      .range(['blue', 'red']);
 
     const pie = d3.pie().value(function (d) {
       return d[1]
-    })
-    const data_ready = pie(Object.entries(pData))
+    });
+    const data_ready = pie(Object.entries(pData));
 
-    const container = svgElement.append('g').attr('transform', 'translate(80, 80)')
+    const container = svgElement.append('g')
+      .attr('transform', 'translate(' + dimensions.width / 2 + ', ' + dimensions.height/ 2 + ')')
 
-    const arcGenerator = d3.arc().innerRadius(0).outerRadius(78)
+    const arcGenerator = d3.arc()
+      .innerRadius(0)
+      .outerRadius(dimensions.height / 2)
 
     container
       .selectAll('mySlices')
@@ -97,10 +107,7 @@ export const PartyKillingsCircle: React.FC = () => {
   return (
     <div className={classes.container}>
       <svg ref={ref} />
-      <div className={classes.text}>
-        {/* <div className={classes.percentage}>{pData}%</div> */}
-        <div className={classes.info}>What party preveils in police killings locations</div>
-      </div>
+      <div className={classes.text}>police killing location's party dominance</div>
     </div>
   )
 }
