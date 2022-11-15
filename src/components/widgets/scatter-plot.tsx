@@ -73,7 +73,7 @@ export const ScatterPlot: React.FC = () => {
       .attr('transform', 'translate(' + dimensions.width / 2 + ' ,' + (dimensions.height - dimensions.margin.top) + ')')
       // .style("text-anchor", "middle")
       .style('font-size', 14)
-      .text('Age')
+      .text("Victim's age")
 
     svg
       .append('g')
