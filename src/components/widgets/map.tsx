@@ -1,23 +1,30 @@
 import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
-import topology from '../../data/us_states.topojson'
+// import topology from '../../data/us_states.topojson'
+import mapData from '../../data/us-states.json'
+import censusData from '../../data/census.json'
 
 import React, { useEffect, useRef } from 'react'
 import { createUseStyles } from 'react-jss'
-import { Theme } from '../../theme'
+import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
+import { CensusDataPoint } from '../../types/census'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     ...theme.common.vizContainer('1 / 1 / 4 / 13'),
     ...theme.typography.sortOfLarge,
+    flexDirection: 'column',
+    justifyContent: 'space-around',
   },
   text: {
     ...theme.common.flexBox,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    maxWidth: 100,
+    // flexDirection: 'column',
+    // alignItems: 'flex-start',
+    // justifyContent: 'space-between',
+    // maxWidth: 100,
+    textAlign: 'center',
+    fontSize: theme.typography.small.fontSize,
   },
   percentage: {
     ...theme.typography.largest,
@@ -28,17 +35,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
   info: {
     ...theme.typography.small,
     color: theme.colors.darkGray,
-  }
+  },
 }))
 
 export const Map: React.FC = () => {
   const classes = useStyles()
   const ref = useRef(null)
   const data: PoliceViolenceDataPoint[] = rawData as PoliceViolenceDataPoint[]
+  const census: CensusDataPoint[] = censusData as CensusDataPoint[]
+  const states = census.reduce((obj, item) => {
+    obj[item.state] = item.state_code
+    return obj
+  }, {})
+
+  const pathsForMap = mapData //d3.json("https://s3-us-west-2.amazonaws.com/s.cdpn.io/25240/us-states.json")
 
   const dimensions = {
-    height: window.innerHeight / 5 - 20,
-    width: window.innerWidth / 4 - 20,
+    height: window.innerHeight / 2,
+    width: window.innerWidth / 1.6,
   }
 
   const pData = {
@@ -47,69 +61,50 @@ export const Map: React.FC = () => {
   }
 
   useEffect(() => {
-    const svgElement = d3
-      .select(ref.current)
-      .attr('width', dimensions.width - 100)
-      .attr('height', dimensions.height)
+    const svg = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
 
-    var projection = d3.geoAlbersUsa()
+    const projection = d3
+      .geoAlbersUsa()
       .scale(dimensions.width)
-      .translate([dimensions.width / 2, dimensions.height / 2]);
-    var path = d3.geoPath()
-      .projection(projection);
-    var viewboxwidth = dimensions.width * 1;
-    var viewboxheight = dimensions.height - 20;
+      .translate([dimensions.width / 2, dimensions.height / 2])
+    const path = d3.geoPath().projection(projection)
 
-    const data = d3.range(100)
+    svg
+      .append('div')
+      .attr('id', 'svg')
+      .append('div')
+      .attr('class', 'map_container')
+      .append('svg')
+      .attr('viewBox', '0 0 ' + dimensions.width + ' ' + dimensions.height)
+      .attr('preserveAspectRatio', 'xMinYMin')
 
-    const color = d3.scaleOrdinal().range(['blue', 'red'])
-
-    const pie = d3.pie().value(function (d) {
-      return d[1]
-    })
-    const data_ready = pie(Object.entries(pData))
-
-    const container = svgElement.append('g').attr('transform', 'translate(80, 80)')
-
-    const arcGenerator = d3.arc().innerRadius(0).outerRadius(78)
-
-    container
-      .selectAll('mySlices')
-      .data(data_ready)
+    svg
+      .append('g')
+      .attr('id', 'map')
+      .selectAll('path')
+      .data(pathsForMap.features)
       .join('path')
-      .attr('d', arcGenerator)
-      .attr('fill', function (d) {
-        return color(d.data[1])
-      })
-      // .attr("stroke", "black")
-      // .style("stroke-width", "0px")
-      .style('opacity', 0.7)
-      .transition()
-      .duration(1500)
+      .attr('d', d => path(d))
+      .style('stroke', 'white')
+      .style('fill', 'darkblue')
 
-    container
-      .selectAll('mySlices')
-      .data(data_ready)
-      .enter()
-      .append('text')
-      .text(function (d) {
-        return d.data[0]
-      })
-      .attr('transform', function (d) {
-        return 'translate(' + arcGenerator.centroid(d) + ')'
-      })
-      .style('text-anchor', 'middle')
-      .style('font-size', 12)
-      .style('opacity', 0.7)
+    const labels = svg.append('g').attr('id', 'labels')
+    labels
+      .selectAll('text')
+      .data(pathsForMap.features)
+      .join('text')
+      .attr('text-anchor', 'middle')
+      .attr('font-size', theme.typography.smallest.fontSize)
+      .attr('fill', 'white')
+      .text(d => states[d.properties.name])
+      .attr('x', d => path.centroid(d)[0])
+      .attr('y', d => path.centroid(d)[1])
   }, [dimensions.height, dimensions.width, pData])
 
   return (
     <div className={classes.container}>
       <svg ref={ref} />
-      <div className={classes.text}>
-        {/* <div className={classes.percentage}>{pData}%</div> */}
-        <div className={classes.info}>What party preveils in police killings locations</div>
-      </div>
+      <div className={classes.text}>police killings in different states</div>
     </div>
   )
 }
