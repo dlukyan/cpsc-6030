@@ -12,3 +12,5 @@ export interface CensusDataPoint {
   '2020': number
   '2021': number
 }
+
+export type Party = 'Democrats' | 'Republicans'

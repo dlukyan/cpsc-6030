@@ -35,6 +35,13 @@ export const ScatterPlot: React.FC = () => {
   const ref = useRef(null)
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
+  const priceStrFormater = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+
   const dimensions = {
     height: window.innerHeight / 2 - 20,
     width: window.innerWidth / 3,
@@ -62,7 +69,7 @@ export const ScatterPlot: React.FC = () => {
 
     svg
       .append('g')
-      .call(d3.axisBottom(xScale)) //.tickValues(xScale.domain().filter(function (d, i) { return !(i % 5) })))
+      .call(d3.axisBottom(xScale))
       .attr('transform', 'translate(0, ' + (dimensions.height - dimensions.margin.bottom) + ')')
       .selectAll('text')
       .attr('transform', 'translate(' + dimensions.margin.right / 2 + ', 4)')
@@ -71,7 +78,6 @@ export const ScatterPlot: React.FC = () => {
     svg
       .append('text')
       .attr('transform', 'translate(' + dimensions.width / 2 + ' ,' + (dimensions.height - dimensions.margin.top) + ')')
-      // .style("text-anchor", "middle")
       .style('font-size', 14)
       .text("Victim's age")
 
@@ -96,6 +102,22 @@ export const ScatterPlot: React.FC = () => {
       .style('font-size', 14)
       .text('Location household average income')
 
+    const incomeText = svg
+      .append('text')
+      .attr('id', 'income-text')
+      .attr('transform', `translate(${dimensions.width - 120} , ${dimensions.margin.top + 10})`)
+      .style('text-anchor', 'start')
+      .style('font-size', 14)
+      .text('Income: ')
+
+    const ageText = svg
+      .append('text')
+      .attr('id', 'age-text')
+      .attr('transform', `translate(${dimensions.width - 120} , ${dimensions.margin.top + 30})`)
+      .style('text-anchor', 'start')
+      .style('font-size', 14)
+      .text('Age: ')
+
     svg
       .append('g')
       .selectAll('dot')
@@ -110,17 +132,39 @@ export const ScatterPlot: React.FC = () => {
       })
       .attr('r', 1.5)
       .style('fill', theme.colors.primary)
+      .on('mouseover', function (_, d) {
+        svg
+          .append('circle')
+          .attr('id', 'temp-dot')
+          .attr('cx', xScale(d.age))
+          .attr('cy', yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom)
+          .attr('r', 7)
+          .style('fill', theme.colors.secondary)
+        incomeText.text(`Income: ${priceStrFormater.format(d.hhincome_median_census_tract)}`)
+        ageText.text(`Age: ${d.age}`)
+      })
+      .on('mouseout', function () {
+        svg.selectAll('circle#temp-dot').remove()
+        incomeText.text(`Income: `)
+        ageText.text(`Age: `)
+      })
       .transition()
       .duration(1500)
-  }, [dimensions.height, dimensions.width, data])
+  }, [
+    dimensions.height,
+    dimensions.width,
+    data,
+    dimensions.margin.bottom,
+    dimensions.margin.right,
+    dimensions.margin.top,
+    dimensions.margin.left,
+    xScale,
+    yScale,
+  ])
 
   return (
     <div className={classes.container}>
       <svg ref={ref} />
-      {/* <div className={classes.text}>
-        <div className={classes.percentage}>{percentage}%</div>
-        <div className={classes.info}>of police killings include a suspect trying to flee</div>
-      </div> */}
     </div>
   )
 }

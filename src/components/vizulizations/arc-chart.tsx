@@ -1,12 +1,12 @@
 import * as d3 from 'd3'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
+import { classNames } from '../../utils/classNames'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('', '', 1.05),
     ...theme.typography.sortOfLarge,
     ...theme.common.flexBox,
     flexDirection: 'column',
@@ -18,9 +18,32 @@ const useStyles = createUseStyles((theme: Theme) => ({
       transition: 'all 0.25s ease-in-out',
     },
   },
+  containerUnfocused: {
+    ...theme.common.vizContainer('', '', 1.05),
+  },
+  containerFocused: {
+    ...theme.common.vizContainerClicked('', '', 2),
+  },
   text: {
     ...theme.typography.small,
     textAlign: 'center',
+  },
+  x: {
+    position: 'absolute',
+    top: 0,
+    right: 10,
+    ...theme.typography.large,
+    color: theme.colors.darkGray,
+    cursor: 'pointer',
+  },
+  overlay: {
+    zIndex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
   percentage: {
     position: 'absolute',
@@ -41,6 +64,8 @@ export const ArcChart: React.FC<{
   id: string
 }> = ({ percentage, text, dimensions, gridArea, id, origin }) => {
   const classes = useStyles()
+
+  const [focused, setFocused] = useState<boolean>(false)
 
   const ref = useRef(null)
 
@@ -158,9 +183,22 @@ export const ArcChart: React.FC<{
   }, [dimensions.height, dimensions.width, id, percentage])
 
   return (
-    <div className={classes.container} style={{ gridArea, transformOrigin: origin }}>
-      <svg ref={ref} />
-      <div className={classes.text}>{text}</div>
-    </div>
+    <>
+      <div
+        className={classNames(classes.container, focused ? classes.containerFocused : classes.containerUnfocused)}
+        style={{ gridArea, transformOrigin: origin }}
+        onClick={() => (focused ? null : setFocused(true))}
+      >
+        <svg ref={ref} />
+        {focused && (
+          <div className={classes.x} onClick={() => setFocused(false)}>
+            x
+          </div>
+        )}
+
+        <div className={classes.text}>{text}</div>
+      </div>
+      {focused && <div className={classes.overlay} />}
+    </>
   )
 }

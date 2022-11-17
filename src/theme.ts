@@ -7,6 +7,8 @@ const colors = {
   primary: '#ff8037',
   primaryLight: '#ffa26e',
   secondary: '#8274ff',
+  blue: '#3661ff',
+  red: '#f84040',
 }
 
 const maxWidthMedia = (size: number) => `@media screen and (max-width: ${size}px)`
@@ -137,10 +139,25 @@ const common = {
       boxShadow: `1px 1px 50px 5px ${theme.colors.darkGray}`,
       border: 'none',
     },
-    transition: 'scale 0.5s ease-out, box-shadow 0.5s ease',
+    transition: 'scale 0.5s ease-out, box-shadow 0.5s ease, height 0.5s ease-out, width 0.5s ease-out',
     padding: 10,
     border: `1px solid ${theme.colors.empty}`,
     ...common.flexBox,
+  }),
+  vizContainerClicked: (gridArea: string, origin: string, scale: number) => ({
+    backgroundColor: 'white',
+    position: 'absolute',
+    height: 500,
+    width: 500,
+    bottom: 0,
+    transformOrigin: origin,
+    boxShadow: `1px 1px 50px 5px ${theme.colors.darkGray}`,
+    transition: 'height 0.5s ease-out, width 0.5s ease-out',
+    border: 'none',
+    zIndex: 100,
+    padding: 10,
+    ...common.flexBox,
+    flexDirection: 'column',
   }),
 }
 

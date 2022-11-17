@@ -10,6 +10,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     ...theme.common.vizContainer('4 / 1 / 5 / 16', 'left', 1.01),
     ...theme.typography.sortOfLarge,
+    '& svg > g > rect': {
+      transition: 'all 0.05s ease-out',
+    },
+    transition: 'all 0.05s ease-out',
   },
   text: {
     ...theme.common.flexBox,
@@ -89,6 +93,24 @@ export const GenderIncomeBarchart: React.FC = () => {
       .attr('height', () => yScale.bandwidth() / 2)
       .attr('width', () => 1)
       .attr('fill', () => theme.colors.primary)
+      .on('mouseover', function () {
+        d3.select(this)
+          .attr('height', () => yScale.bandwidth())
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .attr('y', d => yScale(d.gender) - dimensions.margin.bottom)
+          .attr('width', () => 3)
+          .attr('fill', () => theme.colors.secondary)
+      })
+      .on('mouseout', function () {
+        d3.select(this)
+          .attr('height', () => yScale.bandwidth() / 2)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
+          .attr('width', () => 1)
+          .attr('fill', () => theme.colors.primary)
+      })
       .transition()
       .duration(1500)
   }, [
