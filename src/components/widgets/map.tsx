@@ -1,6 +1,5 @@
 import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
-// import topology from '../../data/us_states.topojson'
 import mapData from '../../data/us-states.json'
 import censusData from '../../data/census.json'
 
@@ -12,7 +11,7 @@ import { CensusDataPoint } from '../../types/census'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('1 / 1 / 4 / 13'),
+    ...theme.common.vizContainer('1 / 1 / 4 / 13', 'top left', 1),
     ...theme.typography.sortOfLarge,
     flexDirection: 'column',
     justifyContent: 'space-around',
@@ -41,9 +40,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export const Map: React.FC = () => {
   const classes = useStyles()
   const ref = useRef(null)
-  const data: PoliceViolenceDataPoint[] = rawData as PoliceViolenceDataPoint[]
-  const census: CensusDataPoint[] = censusData as CensusDataPoint[]
+  const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  const census: CensusDataPoint[] = censusData as unknown as CensusDataPoint[]
   const states = census.reduce((obj, item) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     obj[item.state] = item.state_code
     return obj
   }, {})
@@ -84,6 +85,8 @@ export const Map: React.FC = () => {
       .selectAll('path')
       .data(pathsForMap.features)
       .join('path')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .attr('d', d => path(d))
       .style('stroke', 'white')
       .style('fill', 'darkblue')
@@ -96,10 +99,16 @@ export const Map: React.FC = () => {
       .attr('text-anchor', 'middle')
       .attr('font-size', theme.typography.smallest.fontSize)
       .attr('fill', 'white')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .text(d => states[d.properties.name])
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .attr('x', d => path.centroid(d)[0])
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .attr('y', d => path.centroid(d)[1])
-  }, [dimensions.height, dimensions.width, pData])
+  }, [dimensions.height, dimensions.width, pData, pathsForMap.features, states])
 
   return (
     <div className={classes.container}>

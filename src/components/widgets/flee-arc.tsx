@@ -26,6 +26,7 @@ export const FleeArc: React.FC = () => {
       text={'of police killings include a suspect trying to flee'}
       dimensions={dimensions}
       gridArea={gridArea}
+      origin={'bottom'}
       id={'flee-arc'}
     />
   )

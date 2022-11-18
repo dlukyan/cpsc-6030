@@ -1,4 +1,5 @@
 import { createUseStyles } from 'react-jss'
+import { Position } from './types/dimensions'
 
 const colors = {
   darkGray: '#575B65',
@@ -127,11 +128,42 @@ const common = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
   },
-  vizContainer: (gridArea: string) => ({
+  vizContainer: (gridArea: string, origin: string, scale: number) => ({
+    cursor: scale > 1 ? 'pointer' : 'default',
+    backgroundColor: 'white',
     gridArea,
+    '&:hover': {
+      zIndex: 100,
+      scale: scale,
+      transition: 'scale 0.5s ease-out, box-shadow 0.5s ease',
+      transformOrigin: origin,
+      boxShadow: `1px 1px 50px 5px ${theme.colors.darkGray}`,
+      border: 'none',
+    },
+    transition: 'scale 0.5s ease-out, box-shadow 0.5s ease, height 0.5s ease-out, width 0.5s ease-out',
     padding: 10,
-    border: '1px solid black',
+    height: 'auto',
+    width: 'auto',
+    border: `1px solid ${theme.colors.empty}`,
     ...common.flexBox,
+  }),
+  vizContainerClicked: (position: Position, origin: string) => ({
+    backgroundColor: 'white',
+    position: 'absolute',
+    height: position.height,
+    width: position.width,
+    bottom: position.bottom,
+    left: position.left,
+    right: position.right,
+    top: position.top,
+    transformOrigin: origin,
+    boxShadow: `1px 1px 50px 5px ${theme.colors.darkGray}`,
+    transition: 'height 0.5s ease-out, width 0.5s ease-out',
+    border: 'none',
+    zIndex: 100,
+    padding: 10,
+    ...common.flexBox,
+    flexDirection: 'column',
   }),
 }
 

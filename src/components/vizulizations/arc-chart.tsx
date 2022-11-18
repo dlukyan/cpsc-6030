@@ -6,6 +6,7 @@ import { theme, Theme } from '../../theme'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
+    ...theme.common.vizContainer('', '', 1),
     ...theme.typography.sortOfLarge,
     ...theme.common.flexBox,
     flexDirection: 'column',
@@ -36,8 +37,9 @@ export const ArcChart: React.FC<{
   text: string
   dimensions: { height: number; width: number }
   gridArea: string
+  origin: string
   id: string
-}> = ({ percentage, text, dimensions, gridArea, id }) => {
+}> = ({ percentage, text, dimensions, gridArea, id, origin }) => {
   const classes = useStyles()
 
   const ref = useRef(null)
@@ -153,10 +155,10 @@ export const ArcChart: React.FC<{
             .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
         )
       })
-  }, [dimensions.height, dimensions.width, percentage])
+  }, [dimensions.height, dimensions.width, id, percentage])
 
   return (
-    <div className={classes.container} style={{ ...theme.common.vizContainer(gridArea) }}>
+    <div className={classes.container} style={{ gridArea, transformOrigin: origin }}>
       <svg ref={ref} />
       <div className={classes.text}>{text}</div>
     </div>

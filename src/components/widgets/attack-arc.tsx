@@ -26,6 +26,7 @@ export const AttackArc: React.FC = () => {
       text={'of police killings include a suspect attacking an officer'}
       dimensions={dimensions}
       gridArea={gridArea}
+      origin={'bottom'}
       id={'attack-arc'}
     />
   )

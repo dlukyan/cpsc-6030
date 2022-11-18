@@ -1,19 +1,29 @@
 import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
+import { classNames } from '../../utils/classNames'
+import { Overlay } from '../overlay'
+import { X } from '../x'
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('4 / 1 / 5 / 16'),
     ...theme.typography.sortOfLarge,
     '& svg > g > rect': {
       transition: 'all 0.05s ease-out',
     },
     transition: 'all 0.05s ease-out',
+  },
+  containerUnfocused: {
+    ...theme.common.vizContainer('4 / 1 / 5 / 16', 'left', 1.01),
+  },
+  containerFocused: {
+    ...theme.common.vizContainerClicked({ height: 500, width: (window.innerWidth * 3) / 4, left: 0, top: 200 }, 'left'),
   },
   text: {
     ...theme.common.flexBox,
@@ -36,6 +46,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 export const GenderIncomeBarchart: React.FC = () => {
   const classes = useStyles()
+
+  const [focused, setFocused] = useState<boolean>(false)
+
   const ref = useRef(null)
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
@@ -94,22 +107,24 @@ export const GenderIncomeBarchart: React.FC = () => {
       .attr('width', () => 1)
       .attr('fill', () => theme.colors.primary)
       .on('mouseover', function () {
-        d3.select(this)
-          .attr('height', () => yScale.bandwidth())
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          .attr('y', d => yScale(d.gender) - dimensions.margin.bottom)
-          .attr('width', () => 3)
-          .attr('fill', () => theme.colors.secondary)
+        if (focused)
+          d3.select(this)
+            .attr('height', () => yScale.bandwidth())
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .attr('y', d => yScale(d.gender) - dimensions.margin.bottom)
+            .attr('width', () => 3)
+            .attr('fill', () => theme.colors.secondary)
       })
       .on('mouseout', function () {
-        d3.select(this)
-          .attr('height', () => yScale.bandwidth() / 2)
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
-          .attr('width', () => 1)
-          .attr('fill', () => theme.colors.primary)
+        if (focused)
+          d3.select(this)
+            .attr('height', () => yScale.bandwidth() / 2)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
+            .attr('width', () => 1)
+            .attr('fill', () => theme.colors.primary)
       })
       .transition()
       .duration(1500)
@@ -123,11 +138,19 @@ export const GenderIncomeBarchart: React.FC = () => {
     dimensions.margin.top,
     xScale,
     yScale,
+    focused,
   ])
 
   return (
-    <div className={classes.container}>
-      <svg ref={ref} />
-    </div>
+    <>
+      <div
+        className={classNames(classes.container, focused ? classes.containerFocused : classes.containerUnfocused)}
+        onClick={() => (!focused ? setFocused(true) : null)}
+      >
+        {focused && <X onClick={() => setFocused(false)} />}
+        <svg ref={ref} />
+      </div>
+      {focused && <Overlay onClick={() => setFocused(false)} />}
+    </>
   )
 }
