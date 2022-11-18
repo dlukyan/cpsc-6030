@@ -11,7 +11,7 @@ import { CensusDataPoint } from '../../types/census'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('1 / 1 / 4 / 13', 'top left', 1.015),
+    ...theme.common.vizContainer('1 / 1 / 4 / 13', 'top left', 1),
     ...theme.typography.sortOfLarge,
     flexDirection: 'column',
     justifyContent: 'space-around',
@@ -108,7 +108,7 @@ export const Map: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .attr('y', d => path.centroid(d)[1])
-  }, [dimensions.height, dimensions.width, pData])
+  }, [dimensions.height, dimensions.width, pData, pathsForMap.features, states])
 
   return (
     <div className={classes.container}>

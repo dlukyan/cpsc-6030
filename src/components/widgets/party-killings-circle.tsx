@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
@@ -9,16 +9,26 @@ import { DemocratIcon } from '../../assets/icons/democrat-icon'
 import { RepublicanIcon } from '../../assets/icons/republican-icon'
 import { Party } from '../../types/census'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { Overlay } from '../overlay'
+import { X } from '../x'
+import { classNames } from '../../utils/classNames'
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('4 / 16 / 6 / 21', 'bottom right', 1.02),
     ...theme.typography.sortOfLarge,
     flexDirection: 'column',
     justifyContent: 'space-around',
     '& svg > g > path': {
       transition: 'all 0.25s ease-in-out',
     },
+  },
+  containerUnfocused: {
+    ...theme.common.vizContainer('4 / 16 / 6 / 21', 'bottom right', 1.02),
+  },
+  containerFocused: {
+    ...theme.common.vizContainerClicked({ height: 500, width: 500, bottom: 0, right: 0 }, 'bottom right'),
   },
   text: {
     ...theme.common.flexBox,
@@ -30,6 +40,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export const PartyKillingsCircle: React.FC = () => {
   const classes = useStyles()
   const ref = useRef(null)
+
+  const [focused, setFocused] = useState<boolean>(false)
+
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
@@ -43,12 +56,12 @@ export const PartyKillingsCircle: React.FC = () => {
     },
   }
 
-  const pData = {
-    Democrats: (data.filter(d => d.congressperson_party === 'Democrat').length / data.length) * 100,
-    Republicans: 100 - (data.filter(d => d.congressperson_party === 'Democrat').length / data.length) * 100,
-  }
-
   useEffect(() => {
+    const pData = {
+      Democrats: (data.filter(d => d.congressperson_party === 'Democrat').length / data.length) * 100,
+      Republicans: 100 - (data.filter(d => d.congressperson_party === 'Democrat').length / data.length) * 100,
+    }
+
     const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
 
     const color = d3.scaleOrdinal().range([theme.colors.blue, theme.colors.red])
@@ -87,12 +100,12 @@ export const PartyKillingsCircle: React.FC = () => {
       .on('mouseover', function () {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        d3.select(this).attr('d', arcGenerator(true))
+        if (focused) d3.select(this).attr('d', arcGenerator(true))
       })
       .on('mouseout', function () {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        d3.select(this).attr('d', arcGenerator(false))
+        if (focused) d3.select(this).attr('d', arcGenerator(false))
       })
       .transition()
       .duration(1500)
@@ -114,14 +127,19 @@ export const PartyKillingsCircle: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .html(d => renderToStaticMarkup((d.data[0] as Party) === 'Democrats' ? <DemocratIcon /> : <RepublicanIcon />))
-
-    // container.append('path').attr('d', democratIconPath).attr('fill', 'white')
-  }, [dimensions.height, dimensions.width, pData])
+  }, [data, dimensions.height, dimensions.width, focused])
 
   return (
-    <div className={classes.container}>
-      <svg ref={ref} />
-      <div className={classes.text}>police killing location&apos;s party dominance</div>
-    </div>
+    <>
+      <div
+        className={classNames(classes.container, focused ? classes.containerFocused : classes.containerUnfocused)}
+        onClick={() => (focused ? null : setFocused(true))}
+      >
+        <svg ref={ref} />
+        <div className={classes.text}>police killing location&apos;s party dominance</div>
+        {focused && <X onClick={() => setFocused(false)} />}
+      </div>
+      {focused && <Overlay onClick={() => setFocused(false)} />}
+    </>
   )
 }

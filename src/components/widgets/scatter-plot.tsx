@@ -1,15 +1,25 @@
 import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
+import { classNames } from '../../utils/classNames'
+import { Overlay } from '../overlay'
+import { X } from '../x'
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('1 / 13 / 4 / 21', 'top right', 1.015),
     ...theme.typography.sortOfLarge,
+  },
+  containerFocused: {
+    ...theme.common.vizContainerClicked({ height: 700, width: 700, right: 0, top: 0 }, 'top right'),
+  },
+  containerUnfocused: {
+    ...theme.common.vizContainer('1 / 13 / 4 / 21', 'top right', 1.015),
   },
   text: {
     ...theme.common.flexBox,
@@ -32,19 +42,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 export const ScatterPlot: React.FC = () => {
   const classes = useStyles()
+
+  const [focused, setFocused] = useState<boolean>(false)
   const ref = useRef(null)
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
-  const priceStrFormater = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })
-
   const dimensions = {
     height: window.innerHeight / 2 - 20,
-    width: window.innerWidth / 3,
+    width: window.innerWidth / 5,
     margin: {
       top: 10,
       bottom: 50,
@@ -63,6 +68,13 @@ export const ScatterPlot: React.FC = () => {
     .range([dimensions.height, 0])
 
   useEffect(() => {
+    const priceStrFormatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+
     const svg = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
 
     svg.append('g').attr('color', theme.colors.darkGray)
@@ -133,20 +145,25 @@ export const ScatterPlot: React.FC = () => {
       .attr('r', 1.5)
       .style('fill', theme.colors.primary)
       .on('mouseover', function (_, d) {
-        svg
-          .append('circle')
-          .attr('id', 'temp-dot')
-          .attr('cx', xScale(d.age))
-          .attr('cy', yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom)
-          .attr('r', 7)
-          .style('fill', theme.colors.secondary)
-        incomeText.text(`Income: ${priceStrFormater.format(d.hhincome_median_census_tract)}`)
-        ageText.text(`Age: ${d.age}`)
+        if (focused) {
+          svg
+            .append('circle')
+            .attr('id', 'temp-dot')
+            .attr('cx', xScale(d.age))
+            .attr('cy', yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom)
+            .attr('r', 7)
+            .style('fill', theme.colors.secondary)
+
+          incomeText.text(`Income: ${priceStrFormatter.format(d.hhincome_median_census_tract)}`)
+          ageText.text(`Age: ${d.age}`)
+        }
       })
       .on('mouseout', function () {
-        svg.selectAll('circle#temp-dot').remove()
-        incomeText.text(`Income: `)
-        ageText.text(`Age: `)
+        if (focused) {
+          svg.selectAll('circle#temp-dot').remove()
+          incomeText.text(`Income: `)
+          ageText.text(`Age: `)
+        }
       })
       .transition()
       .duration(1500)
@@ -160,11 +177,19 @@ export const ScatterPlot: React.FC = () => {
     dimensions.margin.left,
     xScale,
     yScale,
+    focused,
   ])
 
   return (
-    <div className={classes.container}>
-      <svg ref={ref} />
-    </div>
+    <>
+      <div
+        className={classNames(classes.container, focused ? classes.containerFocused : classes.containerUnfocused)}
+        onClick={() => (!focused ? setFocused(true) : null)}
+      >
+        <svg ref={ref} />
+        {focused && <X onClick={() => setFocused(false)} />}
+      </div>
+      {focused && <Overlay onClick={() => setFocused(false)} />}
+    </>
   )
 }

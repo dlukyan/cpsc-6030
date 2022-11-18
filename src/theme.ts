@@ -1,4 +1,5 @@
 import { createUseStyles } from 'react-jss'
+import { Position } from './types/dimensions'
 
 const colors = {
   darkGray: '#575B65',
@@ -128,7 +129,7 @@ const common = {
     transform: 'translate(-50%, -50%)',
   },
   vizContainer: (gridArea: string, origin: string, scale: number) => ({
-    cursor: 'pointer',
+    cursor: scale > 1 ? 'pointer' : 'default',
     backgroundColor: 'white',
     gridArea,
     '&:hover': {
@@ -141,15 +142,20 @@ const common = {
     },
     transition: 'scale 0.5s ease-out, box-shadow 0.5s ease, height 0.5s ease-out, width 0.5s ease-out',
     padding: 10,
+    height: 'auto',
+    width: 'auto',
     border: `1px solid ${theme.colors.empty}`,
     ...common.flexBox,
   }),
-  vizContainerClicked: (gridArea: string, origin: string, scale: number) => ({
+  vizContainerClicked: (position: Position, origin: string) => ({
     backgroundColor: 'white',
     position: 'absolute',
-    height: 500,
-    width: 500,
-    bottom: 0,
+    height: position.height,
+    width: position.width,
+    bottom: position.bottom,
+    left: position.left,
+    right: position.right,
+    top: position.top,
     transformOrigin: origin,
     boxShadow: `1px 1px 50px 5px ${theme.colors.darkGray}`,
     transition: 'height 0.5s ease-out, width 0.5s ease-out',
