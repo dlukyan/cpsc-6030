@@ -15,6 +15,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.typography.sortOfLarge,
     flexDirection: 'column',
     justifyContent: 'space-around',
+    '& svg > g > path': {
+      transition: 'all 0.25s ease-in-out',
+    },
   },
   text: {
     ...theme.common.flexBox,
@@ -84,8 +87,19 @@ export const Map: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .attr('d', d => path(d))
+      .attr('class', 'state')
+      .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
-      .style('fill', 'darkblue')
+      .style('fill', theme.colors.darkBlue)
+      .style('cursor', 'pointer')
+      .on('mouseover', function () {
+        d3.selectAll('.state').style('opacity', 0.5)
+        d3.select(this).style('fill', theme.colors.darkRed).style('opacity', 1)
+      })
+      .on('mouseout', function () {
+        d3.selectAll('.state').style('opacity', 1)
+        d3.select(this).style('fill', theme.colors.darkBlue)
+      })
 
     const labels = svg.append('g').attr('id', 'labels')
     labels
@@ -104,6 +118,14 @@ export const Map: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .attr('y', d => path.centroid(d)[1])
+      .style('cursor', 'pointer')
+      .on('mouseover', function (_, d) {
+        d3.selectAll('.state').style('opacity', 0.5)
+        svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkRed).style('opacity', 1)
+      })
+      .on('mouseout', function (_, d) {
+        svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkBlue).style('opacity', 1)
+      })
   }, [dimensions.height, dimensions.width, pData, pathsForMap.features, states])
 
   return (
