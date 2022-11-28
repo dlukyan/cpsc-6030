@@ -45,9 +45,12 @@ export const ArcChart: React.FC<{
   const ref = useRef(null)
 
   useEffect(() => {
-    const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', 110)
+    const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', 150)
 
-    const container = svgElement.append('g').attr('transform', `translate(${dimensions.width / 2}, 110)`)
+    const container = svgElement.append('g').attr('transform', `translate(${dimensions.width / 2}, 150)`)
+
+    const innerR = dimensions.width / 2 - 50
+    const outerR = dimensions.width / 2 - 10
 
     container
       .append('path')
@@ -58,8 +61,8 @@ export const ArcChart: React.FC<{
         // @ts-ignore
         d3
           .arc()
-          .innerRadius(70)
-          .outerRadius(105)
+          .innerRadius(innerR)
+          .outerRadius(outerR)
           .startAngle(-90 * (Math.PI / 180))
           .endAngle(90 * (Math.PI / 180)),
       )
@@ -75,8 +78,8 @@ export const ArcChart: React.FC<{
         // @ts-ignore
         d3
           .arc()
-          .innerRadius(70)
-          .outerRadius(105)
+          .innerRadius(innerR)
+          .outerRadius(outerR)
           .startAngle(-90 * (Math.PI / 180))
           .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
       )
@@ -88,13 +91,13 @@ export const ArcChart: React.FC<{
           // @ts-ignore
           d3
             .arc()
-            .innerRadius(65)
-            .outerRadius(110)
+            .innerRadius(innerR - 5)
+            .outerRadius(outerR + 5)
             .startAngle(-90 * (Math.PI / 180))
             .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
         )
 
-        d3.select(`text#${id}-text`).attr('font-size', theme.typography.largest.fontSize - 5)
+        d3.select(`text#${id}-text`).attr('font-size', theme.typography.moreLarge.fontSize - 5)
       })
       .on('mouseout', function () {
         d3.select(this).attr(
@@ -103,13 +106,13 @@ export const ArcChart: React.FC<{
           // @ts-ignore
           d3
             .arc()
-            .innerRadius(70)
-            .outerRadius(105)
+            .innerRadius(innerR)
+            .outerRadius(outerR)
             .startAngle(-90 * (Math.PI / 180))
             .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
         )
 
-        d3.select(`text#${id}-text`).attr('font-size', theme.typography.largest.fontSize)
+        d3.select(`text#${id}-text`).attr('font-size', theme.typography.moreLarge.fontSize)
       })
       .transition()
       .duration(1500)
@@ -117,7 +120,7 @@ export const ArcChart: React.FC<{
     container
       .append('text')
       .text(`${percentage}%`)
-      .attr('font-size', theme.typography.largest.fontSize)
+      .attr('font-size', theme.typography.moreLarge.fontSize)
       .attr('font-weight', 'bold')
       .attr('font-style', 'italic')
       .attr('id', `${id}-text`)
@@ -126,7 +129,7 @@ export const ArcChart: React.FC<{
       .style('cursor', 'default')
       .attr('y', -10)
       .on('mouseover', function () {
-        d3.select(this).attr('font-size', theme.typography.largest.fontSize - 5)
+        d3.select(this).attr('font-size', theme.typography.moreLarge.fontSize - 5)
 
         d3.select(`path#${id}-arc`).attr(
           'd',
@@ -134,14 +137,14 @@ export const ArcChart: React.FC<{
           // @ts-ignore
           d3
             .arc()
-            .innerRadius(65)
-            .outerRadius(110)
+            .innerRadius(innerR - 5)
+            .outerRadius(outerR + 5)
             .startAngle(-90 * (Math.PI / 180))
             .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
         )
       })
       .on('mouseout', function () {
-        d3.select(this).attr('font-size', theme.typography.largest.fontSize)
+        d3.select(this).attr('font-size', theme.typography.moreLarge.fontSize)
 
         d3.select(`path#${id}-arc`).attr(
           'd',
@@ -149,8 +152,8 @@ export const ArcChart: React.FC<{
           // @ts-ignore
           d3
             .arc()
-            .innerRadius(70)
-            .outerRadius(105)
+            .innerRadius(innerR)
+            .outerRadius(outerR)
             .startAngle(-90 * (Math.PI / 180))
             .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
         )

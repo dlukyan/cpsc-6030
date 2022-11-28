@@ -63,6 +63,7 @@ export const PartyKillingsCircle: React.FC = () => {
     }
 
     const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
+    svgElement.selectAll('*').remove()
 
     const color = d3.scaleOrdinal().range([theme.colors.blue, theme.colors.red])
 

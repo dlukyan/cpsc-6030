@@ -76,6 +76,7 @@ export const ScatterPlot: React.FC = () => {
     })
 
     const svg = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
+    svg.selectAll('*').remove()
 
     svg.append('g').attr('color', theme.colors.darkGray)
 
@@ -113,7 +114,7 @@ export const ScatterPlot: React.FC = () => {
       .style('text-anchor', 'middle')
       .style('font-size', 14)
       .text('Location household average income')
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let incomeText: any = null
     if (focused)
       incomeText = svg
@@ -124,6 +125,7 @@ export const ScatterPlot: React.FC = () => {
         .style('font-size', 14)
         .text('Income: ')
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let ageText: any = null
     if (focused)
       ageText = svg
@@ -146,7 +148,7 @@ export const ScatterPlot: React.FC = () => {
       .attr('cy', function (d) {
         return yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom
       })
-      .attr('r', 1.5)
+      .attr('r', focused ? 2.5 : 1.5)
       .style('fill', theme.colors.darkRed)
       .on('mouseover', function (_, d) {
         if (focused) {

@@ -89,7 +89,7 @@ const typography = {
     ...baseTypography,
   },
   moreLarge: {
-    fontSize: 56,
+    fontSize: 52,
     ...baseTypography,
   },
   extraLarge: {

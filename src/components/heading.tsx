@@ -12,7 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     padding: 10,
     height: '100%',
     width: 'auto',
-    zIndex: 100,
+    zIndex: 60,
   },
 }))
 

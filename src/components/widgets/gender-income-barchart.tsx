@@ -78,6 +78,7 @@ export const GenderIncomeBarchart: React.FC = () => {
 
   useEffect(() => {
     const svg = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
+    svg.selectAll('*').remove()
 
     svg.append('g').attr('color', theme.colors.darkGray)
 
@@ -115,7 +116,7 @@ export const GenderIncomeBarchart: React.FC = () => {
             .attr('height', () => yScale.bandwidth())
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            .attr('y', d => yScale(d.gender) - dimensions.margin.bottom)
+            .attr('y', d => (d.gender === 'Female' ? 0 : yScale(d.gender) / 1.3))
             .attr('width', () => 3)
             .attr('fill', () => theme.colors.darkBlue)
       })
