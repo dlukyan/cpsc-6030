@@ -19,7 +19,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.common.vizContainerClicked({ height: 700, width: 700, right: 0, top: 0 }, 'top right'),
   },
   containerUnfocused: {
-    ...theme.common.vizContainer('1 / 13 / 4 / 21', 'top right', 1.015),
+    ...theme.common.vizContainer('1 / 13 / 7 / 16', 'top right', 1.015),
   },
   text: {
     ...theme.common.flexBox,
@@ -30,7 +30,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   percentage: {
     ...theme.typography.largest,
-    color: theme.colors.primary,
+    color: theme.colors.darkRed,
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
@@ -48,8 +48,8 @@ export const ScatterPlot: React.FC = () => {
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
-    height: window.innerHeight / 2 - 20,
-    width: window.innerWidth / 5,
+    height: focused ? 500 : (window.innerHeight / 9) * 6 - 20,
+    width: focused ? 650 : (window.innerWidth / 15) * 3 - 20,
     margin: {
       top: 10,
       bottom: 50,
@@ -114,21 +114,25 @@ export const ScatterPlot: React.FC = () => {
       .style('font-size', 14)
       .text('Location household average income')
 
-    const incomeText = svg
-      .append('text')
-      .attr('id', 'income-text')
-      .attr('transform', `translate(${dimensions.width - 120} , ${dimensions.margin.top + 10})`)
-      .style('text-anchor', 'start')
-      .style('font-size', 14)
-      .text('Income: ')
+    let incomeText: any = null
+    if (focused)
+      incomeText = svg
+        .append('text')
+        .attr('id', 'income-text')
+        .attr('transform', `translate(${dimensions.width - 120} , ${dimensions.margin.top + 10})`)
+        .style('text-anchor', 'start')
+        .style('font-size', 14)
+        .text('Income: ')
 
-    const ageText = svg
-      .append('text')
-      .attr('id', 'age-text')
-      .attr('transform', `translate(${dimensions.width - 120} , ${dimensions.margin.top + 30})`)
-      .style('text-anchor', 'start')
-      .style('font-size', 14)
-      .text('Age: ')
+    let ageText: any = null
+    if (focused)
+      ageText = svg
+        .append('text')
+        .attr('id', 'age-text')
+        .attr('transform', `translate(${dimensions.width - 120} , ${dimensions.margin.top + 30})`)
+        .style('text-anchor', 'start')
+        .style('font-size', 14)
+        .text('Age: ')
 
     svg
       .append('g')
@@ -143,16 +147,10 @@ export const ScatterPlot: React.FC = () => {
         return yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom
       })
       .attr('r', 1.5)
-      .style('fill', theme.colors.primary)
+      .style('fill', theme.colors.darkRed)
       .on('mouseover', function (_, d) {
         if (focused) {
-          svg
-            .append('circle')
-            .attr('id', 'temp-dot')
-            .attr('cx', xScale(d.age))
-            .attr('cy', yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom)
-            .attr('r', 7)
-            .style('fill', theme.colors.secondary)
+          d3.select(this).attr('r', 7).style('fill', theme.colors.darkBlue)
 
           incomeText.text(`Income: ${priceStrFormatter.format(d.hhincome_median_census_tract)}`)
           ageText.text(`Age: ${d.age}`)
@@ -160,7 +158,8 @@ export const ScatterPlot: React.FC = () => {
       })
       .on('mouseout', function () {
         if (focused) {
-          svg.selectAll('circle#temp-dot').remove()
+          d3.select(this).attr('r', 1.5).style('fill', theme.colors.darkRed)
+
           incomeText.text(`Income: `)
           ageText.text(`Age: `)
         }

@@ -8,8 +8,8 @@ export const FleeArc: React.FC = () => {
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
-    height: window.innerHeight / 5 - 20,
-    width: window.innerWidth / 4 - 20,
+    height: (window.innerHeight / 9) * 3 - 20,
+    width: (window.innerWidth / 15) * 3 - 20,
   }
 
   const percentage = Math.round(
@@ -18,7 +18,7 @@ export const FleeArc: React.FC = () => {
       100,
   )
 
-  const gridArea = '5 / 6 / 6 / 11'
+  const gridArea = '7 / 1 / 10 / 4'
 
   return (
     <ArcChart
@@ -26,7 +26,7 @@ export const FleeArc: React.FC = () => {
       text={'of police killings include a suspect trying to flee'}
       dimensions={dimensions}
       gridArea={gridArea}
-      origin={'bottom'}
+      origin={''}
       id={'flee-arc'}
     />
   )

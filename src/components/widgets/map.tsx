@@ -11,17 +11,13 @@ import { CensusDataPoint } from '../../types/census'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('1 / 1 / 4 / 13', 'top left', 1),
+    ...theme.common.vizContainer('3 / 4 / 8 / 13', '', 1, { borderTop: 'none' }),
     ...theme.typography.sortOfLarge,
     flexDirection: 'column',
     justifyContent: 'space-around',
   },
   text: {
     ...theme.common.flexBox,
-    // flexDirection: 'column',
-    // alignItems: 'flex-start',
-    // justifyContent: 'space-between',
-    // maxWidth: 100,
     textAlign: 'center',
     fontSize: theme.typography.small.fontSize,
   },
@@ -52,8 +48,8 @@ export const Map: React.FC = () => {
   const pathsForMap = mapData //d3.json("https://s3-us-west-2.amazonaws.com/s.cdpn.io/25240/us-states.json")
 
   const dimensions = {
-    height: window.innerHeight / 2,
-    width: window.innerWidth / 1.6,
+    height: (window.innerHeight / 9) * 7 - 10,
+    width: (window.innerWidth / 15) * 9,
   }
 
   const pData = {
@@ -67,7 +63,7 @@ export const Map: React.FC = () => {
     const projection = d3
       .geoAlbersUsa()
       .scale(dimensions.width)
-      .translate([dimensions.width / 2, dimensions.height / 2])
+      .translate([dimensions.width / 2, dimensions.height / 3])
     const path = d3.geoPath().projection(projection)
 
     svg

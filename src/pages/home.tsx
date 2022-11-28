@@ -8,14 +8,15 @@ import { CameraArc } from '../components/widgets/camera-arc'
 import { FleeArc } from '../components/widgets/flee-arc'
 import { AttackArc } from '../components/widgets/attack-arc'
 import { PartyKillingsCircle } from '../components/widgets/party-killings-circle'
+import { Heading } from '../components/heading'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     width: '100vw',
     height: '100vh',
     display: 'grid',
-    gridTemplateColumns: 'repeat(20, 1fr)',
-    gridTemplateRows: 'repeat(5, 1fr)',
+    gridTemplateColumns: 'repeat(15, 1fr)',
+    gridTemplateRows: 'repeat(9, 1fr)',
   },
   title: {
     ...theme.typography.largest,
@@ -27,6 +28,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className={classes.container}>
+      <Heading />
       <Map />
       <ScatterPlot />
       <GenderIncomeBarchart />

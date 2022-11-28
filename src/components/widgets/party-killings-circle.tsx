@@ -25,7 +25,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
   },
   containerUnfocused: {
-    ...theme.common.vizContainer('4 / 16 / 6 / 21', 'bottom right', 1.02),
+    ...theme.common.vizContainer('7 / 13 / 10 / 16', 'bottom right', 1.02),
   },
   containerFocused: {
     ...theme.common.vizContainerClicked({ height: 500, width: 500, bottom: 0, right: 0 }, 'bottom right'),
@@ -46,8 +46,8 @@ export const PartyKillingsCircle: React.FC = () => {
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
-    height: window.innerHeight / 3.1,
-    width: window.innerWidth / 4.5,
+    height: focused ? 350 : (window.innerHeight / 9) * 3 - 40,
+    width: focused ? 350 : (window.innerWidth / 15) * 3 - 20,
     margin: {
       top: 10,
       bottom: 20,
@@ -119,14 +119,22 @@ export const PartyKillingsCircle: React.FC = () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const centroid = arcGenerator(false).centroid(d)
-        return `translate(${centroid[0] - 40}, ${centroid[1] - 32})`
+        return `translate(${centroid[0] - (focused ? 60 : 30)}, ${centroid[1] - (focused ? 38 : 28)})`
       })
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .attr('id', d => ((d.data[0] as Party) === 'Democrats' ? 'd-icon' : 'r-icon'))
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .html(d => renderToStaticMarkup((d.data[0] as Party) === 'Democrats' ? <DemocratIcon /> : <RepublicanIcon />))
+      .html(d =>
+        renderToStaticMarkup(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          (d.data[0] as Party) === 'Democrats' ? (
+            <DemocratIcon scale={focused ? 1.5 : 0.8} />
+          ) : (
+            <RepublicanIcon scale={focused ? 1.5 : 0.8} />
+          ),
+        ),
+      )
   }, [data, dimensions.height, dimensions.width, focused])
 
   return (

@@ -8,13 +8,13 @@ export const CameraArc: React.FC = () => {
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
-    height: window.innerHeight / 5 - 20,
-    width: window.innerWidth / 4 - 20,
+    height: (window.innerHeight / 9) * 3 - 20,
+    width: (window.innerWidth / 15) * 3 - 20,
   }
 
   const percentage = Math.round((data.filter(d => d.wapo_body_ccamera === 'Yes').length / data.length) * 100)
 
-  const gridArea = '5 / 1 / 6 / 6'
+  const gridArea = '4 / 1 / 7 / 4'
 
   return (
     <ArcChart
@@ -22,7 +22,7 @@ export const CameraArc: React.FC = () => {
       text={'of police killings include an officer wearing a body cam'}
       dimensions={dimensions}
       gridArea={gridArea}
-      origin={'bottom left'}
+      origin={''}
       id={'camera-arc'}
     />
   )
