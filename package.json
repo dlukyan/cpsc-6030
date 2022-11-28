@@ -15,12 +15,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "css-loader": "^6.7.2",
     "d3": "^7.6.1",
     "dotenv": "^10.0.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-jss": "^10.7.1",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "style-loader": "^3.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",

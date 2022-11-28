@@ -11,17 +11,16 @@ import { CensusDataPoint } from '../../types/census'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    ...theme.common.vizContainer('1 / 1 / 4 / 13', 'top left', 1),
+    ...theme.common.vizContainer('3 / 4 / 8 / 13', '', 1, { borderTop: 'none' }),
     ...theme.typography.sortOfLarge,
     flexDirection: 'column',
     justifyContent: 'space-around',
+    '& svg > g > path': {
+      transition: 'all 0.25s ease-in-out',
+    },
   },
   text: {
     ...theme.common.flexBox,
-    // flexDirection: 'column',
-    // alignItems: 'flex-start',
-    // justifyContent: 'space-between',
-    // maxWidth: 100,
     textAlign: 'center',
     fontSize: theme.typography.small.fontSize,
   },
@@ -52,8 +51,8 @@ export const Map: React.FC = () => {
   const pathsForMap = mapData //d3.json("https://s3-us-west-2.amazonaws.com/s.cdpn.io/25240/us-states.json")
 
   const dimensions = {
-    height: window.innerHeight / 2,
-    width: window.innerWidth / 1.6,
+    height: (window.innerHeight / 9) * 7 - 10,
+    width: (window.innerWidth / 15) * 9,
   }
 
   const pData = {
@@ -67,7 +66,7 @@ export const Map: React.FC = () => {
     const projection = d3
       .geoAlbersUsa()
       .scale(dimensions.width)
-      .translate([dimensions.width / 2, dimensions.height / 2])
+      .translate([dimensions.width / 2, dimensions.height / 3])
     const path = d3.geoPath().projection(projection)
 
     svg
@@ -88,8 +87,19 @@ export const Map: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .attr('d', d => path(d))
+      .attr('class', 'state')
+      .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
-      .style('fill', 'darkblue')
+      .style('fill', theme.colors.darkBlue)
+      .style('cursor', 'pointer')
+      .on('mouseover', function () {
+        d3.selectAll('.state').style('opacity', 0.5)
+        d3.select(this).style('fill', theme.colors.darkRed).style('opacity', 1)
+      })
+      .on('mouseout', function () {
+        d3.selectAll('.state').style('opacity', 1)
+        d3.select(this).style('fill', theme.colors.darkBlue)
+      })
 
     const labels = svg.append('g').attr('id', 'labels')
     labels
@@ -108,6 +118,14 @@ export const Map: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .attr('y', d => path.centroid(d)[1])
+      .style('cursor', 'pointer')
+      .on('mouseover', function (_, d) {
+        d3.selectAll('.state').style('opacity', 0.5)
+        svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkRed).style('opacity', 1)
+      })
+      .on('mouseout', function (_, d) {
+        svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkBlue).style('opacity', 1)
+      })
   }, [dimensions.height, dimensions.width, pData, pathsForMap.features, states])
 
   return (

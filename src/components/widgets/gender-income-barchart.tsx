@@ -20,10 +20,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     transition: 'all 0.05s ease-out',
   },
   containerUnfocused: {
-    ...theme.common.vizContainer('4 / 1 / 5 / 16', 'left', 1.01),
+    ...theme.common.vizContainer('8 / 4 / 10 / 13', 'bottom', 1.01),
   },
   containerFocused: {
-    ...theme.common.vizContainerClicked({ height: 500, width: (window.innerWidth * 3) / 4, left: 0, top: 200 }, 'left'),
+    ...theme.common.vizContainerClicked(
+      { height: 500, width: (window.innerWidth * 3) / 4, left: window.innerWidth / 8, bottom: 0 },
+      'bottom',
+    ),
   },
   text: {
     ...theme.common.flexBox,
@@ -34,7 +37,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   percentage: {
     ...theme.typography.largest,
-    color: theme.colors.primary,
+    color: theme.colors.darkRed,
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
@@ -53,8 +56,8 @@ export const GenderIncomeBarchart: React.FC = () => {
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
 
   const dimensions = {
-    height: window.innerHeight / 6 - 20,
-    width: window.innerWidth / 1.5,
+    height: focused ? 300 : (window.innerHeight / 9) * 2 - 20,
+    width: focused ? (window.innerWidth * 3) / 4 - 40 : (window.innerWidth / 15) * 9,
     margin: {
       top: 10,
       bottom: 20,
@@ -75,6 +78,7 @@ export const GenderIncomeBarchart: React.FC = () => {
 
   useEffect(() => {
     const svg = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
+    svg.selectAll('*').remove()
 
     svg.append('g').attr('color', theme.colors.darkGray)
 
@@ -105,16 +109,16 @@ export const GenderIncomeBarchart: React.FC = () => {
       .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
       .attr('height', () => yScale.bandwidth() / 2)
       .attr('width', () => 1)
-      .attr('fill', () => theme.colors.primary)
+      .attr('fill', () => theme.colors.darkRed)
       .on('mouseover', function () {
         if (focused)
           d3.select(this)
             .attr('height', () => yScale.bandwidth())
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            .attr('y', d => yScale(d.gender) - dimensions.margin.bottom)
+            .attr('y', d => (d.gender === 'Female' ? 0 : yScale(d.gender) / 1.3))
             .attr('width', () => 3)
-            .attr('fill', () => theme.colors.secondary)
+            .attr('fill', () => theme.colors.darkBlue)
       })
       .on('mouseout', function () {
         if (focused)
@@ -124,7 +128,7 @@ export const GenderIncomeBarchart: React.FC = () => {
             // @ts-ignore
             .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
             .attr('width', () => 1)
-            .attr('fill', () => theme.colors.primary)
+            .attr('fill', () => theme.colors.darkRed)
       })
       .transition()
       .duration(1500)

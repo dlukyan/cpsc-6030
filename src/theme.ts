@@ -10,6 +10,8 @@ const colors = {
   secondary: '#8274ff',
   blue: '#3661ff',
   red: '#f84040',
+  darkBlue: '#00218a',
+  darkRed: '#960000',
 }
 
 const maxWidthMedia = (size: number) => `@media screen and (max-width: ${size}px)`
@@ -38,9 +40,22 @@ const breakpoints = {
 }
 
 const baseTypography = {
-  fontFamily: '"Avenir Next", sans-serif',
+  fontFamily: '"Rubik", sans-serif',
   fontWeight: 500,
   color: colors.darkGray,
+  lineHeight: 4 / 3,
+}
+
+const headerTypography = {
+  fontFamily: '"Rubik", sans-serif',
+  fontWeight: 'bold',
+  fontStyle: 'italic',
+  textTransform: 'uppercase',
+  background: `-webkit-linear-gradient(1deg, ${colors.darkBlue}, ${colors.darkRed} 100%)`,
+  '-webkit-background-clip': 'text',
+  '-webkit-text-fill-color': 'transparent',
+  textAlign: 'center',
+  fontSize: 53,
   lineHeight: 4 / 3,
 }
 
@@ -74,12 +89,15 @@ const typography = {
     ...baseTypography,
   },
   moreLarge: {
-    fontSize: 56,
+    fontSize: 52,
     ...baseTypography,
   },
   extraLarge: {
     fontSize: 68,
     ...baseTypography,
+  },
+  heading: {
+    ...headerTypography,
   },
 }
 
@@ -128,24 +146,27 @@ const common = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
   },
-  vizContainer: (gridArea: string, origin: string, scale: number) => ({
+  vizContainer: (gridArea: string, origin: string, scale: number, extra?: { [property: string]: string | number }) => ({
     cursor: scale > 1 ? 'pointer' : 'default',
     backgroundColor: 'white',
     gridArea,
-    '&:hover': {
-      zIndex: 100,
-      scale: scale,
-      transition: 'scale 0.5s ease-out, box-shadow 0.5s ease',
-      transformOrigin: origin,
-      boxShadow: `1px 1px 50px 5px ${theme.colors.darkGray}`,
-      border: 'none',
-    },
+    ...(scale > 1 && {
+      '&:hover': {
+        zIndex: 100,
+        scale: scale,
+        transition: 'scale 0.5s ease-out, box-shadow 0.5s ease',
+        transformOrigin: origin,
+        boxShadow: `1px 1px 50px 5px ${theme.colors.darkGray}`,
+        border: 'none',
+      },
+    }),
     transition: 'scale 0.5s ease-out, box-shadow 0.5s ease, height 0.5s ease-out, width 0.5s ease-out',
     padding: 10,
     height: 'auto',
     width: 'auto',
     border: `1px solid ${theme.colors.empty}`,
     ...common.flexBox,
+    ...extra,
   }),
   vizContainerClicked: (position: Position, origin: string) => ({
     backgroundColor: 'white',

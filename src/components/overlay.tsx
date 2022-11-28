@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss'
 
 const useStyles = createUseStyles(() => ({
   overlay: {
-    zIndex: 1,
+    zIndex: 61,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     position: 'fixed',
     top: 0,

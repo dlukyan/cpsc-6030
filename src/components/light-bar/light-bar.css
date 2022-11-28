@@ -1,0 +1,143 @@
+/* LIGHT BAR ESSENTIALS */
+
+.lightbar {
+  position: relative;
+  padding: 4px 10px;
+  margin: 0 auto;
+  border-radius: 3px;
+  width: 806px;
+  opacity: 0.5;
+}
+
+.light {
+  position: relative;
+  width: 131px;
+  padding: 5px 10px 4px;
+  background-color: #222;
+  border-top: 2px solid #111;
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+  border-left: 2px solid #111;
+  border-radius: 6px;
+  animation-duration: 1600ms;
+  animation-name: light;
+  animation-iteration-count: infinite;
+  display: inline-block;
+}
+
+.inner-light {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  top: -1px;
+  left: -1px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  opacity: 0;
+}
+
+#light-1 .inner-light,
+#light-6 .inner-light {
+  z-index: 777;
+}
+
+#light-2 .inner-light,
+#light-5 .inner-light {
+  z-index: 888;
+}
+
+#light-3 .inner-light,
+#light-4 .inner-light {
+  z-index: 999;
+}
+
+.bulb {
+  display: inline-block;
+  position: relative;
+  box-shadow: 0 0 3px #222;
+  border-radius: 50%;
+  margin: 1px 0 0;
+  width: 11px;
+  height: 11px;
+  z-index: 999;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(255, 255, 255, 0.14) 25%,
+    rgba(255, 255, 255, 0.18) 49%,
+    rgba(0, 0, 0, 0) 78%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+/* ANIMATION BASICS */
+.delay .bulb {
+  animation-delay: 0ms;
+}
+
+.delay .inner-light {
+  animation-delay: 0ms;
+}
+
+.strobe .bulb {
+  animation-duration: 1600ms;
+  animation-name: bulb-strobe;
+  animation-iteration-count: infinite;
+}
+
+@keyframes bulb-strobe {
+  /*0%, 50% {*/
+  /*    background: linear-gradient(155deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.14) 25%, rgba(255, 255, 255, 0.18) 49%, rgba(0, 0, 0, 0) 78%, rgba(0, 0, 0, 0.8) 100%);*/
+  /*    box-shadow: 0 0 3px #222*/
+  /*}*/
+  /*50%, 100% {*/
+  0%,
+  100% {
+    background: white;
+    box-shadow: 0 0 10px 4px #fff;
+  }
+}
+
+/* RED/BLUE LIGHTS */
+.strobe.blue .inner-light {
+  animation-duration: 1600ms;
+  animation-name: strobe-blue;
+  animation-iteration-count: infinite;
+}
+
+.strobe.red .inner-light {
+  animation-duration: 1600ms;
+  animation-name: strobe-red;
+  animation-iteration-count: infinite;
+}
+
+@keyframes strobe-blue {
+  /*0%, 50% {*/
+  /*    background: linear-gradient(155deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.14) 25%, rgba(255, 255, 255, 0.18) 49%, rgba(0, 0, 0, 0) 78%, rgba(0, 0, 0, 0.8) 100%);*/
+  /*    box-shadow: 0 0 3px #222*/
+  /*}*/
+  /*50%, 100% {*/
+  0%,
+  100% {
+    border: 1px solid #139eff;
+    background-color: #66d2ff;
+    box-shadow: 0 0 100px 25px #0078ff;
+    opacity: 1;
+  }
+}
+
+@keyframes strobe-red {
+  /*50%, 100% {*/
+  /*    background: linear-gradient(155deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.14) 25%, rgba(255, 255, 255, 0.18) 49%, rgba(0, 0, 0, 0) 78%, rgba(0, 0, 0, 0.8) 100%);*/
+  /*    box-shadow: 0 0 3px #222*/
+  /*}*/
+  /*0%, 50% {*/
+  0%,
+  100% {
+    border: 1px solid #ee2819;
+    background-color: #ff4444;
+    box-shadow: 0 0 100px 25px #ff4444;
+    opacity: 1;
+  }
+}
