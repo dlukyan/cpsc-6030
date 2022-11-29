@@ -107,12 +107,15 @@ const elements = {
     padding: 0,
     borderRadius: 10,
     backgroundColor: 'transparent',
+    transition: 'all 0.25s ease-in-out',
     '&:active': {
       opacity: 0.2,
       tapHighlightColor: 'transparent',
     },
     '&:hover': {
       cursor: 'pointer',
+      scale: 1.1,
+      transition: 'all 0.25s ease-in-out',
     },
     '&:focus': {
       outline: 'none',

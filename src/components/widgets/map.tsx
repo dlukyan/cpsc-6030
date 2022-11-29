@@ -3,7 +3,7 @@ import rawData from '../../data/data_cleansed.json'
 import mapData from '../../data/us-states.json'
 import censusData from '../../data/census.json'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
@@ -34,11 +34,25 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.typography.small,
     color: theme.colors.darkGray,
   },
+  resetButton: {
+    ...theme.elements.button,
+    position: 'absolute',
+    top: '70vh',
+    left: '74vw',
+    backgroundColor: theme.colors.darkRed,
+    borderRadius: 5,
+    color: theme.colors.white,
+    padding: 10,
+    cursor: 'pointer',
+  },
 }))
 
 export const Map: React.FC = () => {
   const classes = useStyles()
   const ref = useRef(null)
+
+  const [selectedState, setSelectedState] = useState<string>('')
+
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
   const census: CensusDataPoint[] = censusData as unknown as CensusDataPoint[]
   const states = census.reduce((obj, item) => {
@@ -62,12 +76,27 @@ export const Map: React.FC = () => {
 
   useEffect(() => {
     const svg = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
+    svg.selectAll('*').remove()
 
     const projection = d3
       .geoAlbersUsa()
       .scale(dimensions.width)
       .translate([dimensions.width / 2, dimensions.height / 3])
     const path = d3.geoPath().projection(projection)
+
+    let projectionSelectedState
+    let pathSelectedState
+
+    if (selectedState !== '') {
+      projectionSelectedState = d3
+        .geoAlbersUsa()
+        .scale(dimensions.width * 2)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // .center(mapData.features.find(f => f.properties.name === selectedState).geometry)
+        .translate([0, 0])
+      pathSelectedState = d3.geoPath().projection(projectionSelectedState)
+    }
 
     svg
       .append('div')
@@ -82,23 +111,35 @@ export const Map: React.FC = () => {
       .append('g')
       .attr('id', 'map')
       .selectAll('path')
-      .data(pathsForMap.features)
+      .data(
+        selectedState === ''
+          ? pathsForMap.features
+          : pathsForMap.features.filter(f => f.properties.name === selectedState),
+      )
       .join('path')
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .attr('d', d => path(d))
+      .attr('d', d => (selectedState === '' ? path(d) : pathSelectedState(d)))
       .attr('class', 'state')
       .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
       .style('fill', theme.colors.darkBlue)
       .style('cursor', 'pointer')
       .on('mouseover', function () {
-        d3.selectAll('.state').style('opacity', 0.5)
-        d3.select(this).style('fill', theme.colors.darkRed).style('opacity', 1)
+        if (selectedState === '') {
+          d3.selectAll('.state').style('opacity', 0.5)
+          d3.select(this).style('fill', theme.colors.darkRed).style('opacity', 1)
+        }
       })
       .on('mouseout', function () {
-        d3.selectAll('.state').style('opacity', 1)
-        d3.select(this).style('fill', theme.colors.darkBlue)
+        if (selectedState === '') {
+          d3.selectAll('.state').style('opacity', 1)
+          d3.select(this).style('fill', theme.colors.darkBlue)
+        }
+      })
+      .on('click', function (e, d) {
+        console.log(d)
+        setSelectedState(d.properties.name)
       })
 
     const labels = svg.append('g').attr('id', 'labels')
@@ -120,18 +161,31 @@ export const Map: React.FC = () => {
       .attr('y', d => path.centroid(d)[1])
       .style('cursor', 'pointer')
       .on('mouseover', function (_, d) {
-        d3.selectAll('.state').style('opacity', 0.5)
-        svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkRed).style('opacity', 1)
+        if (selectedState === '') {
+          d3.selectAll('.state').style('opacity', 0.5)
+          svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkRed).style('opacity', 1)
+        }
       })
       .on('mouseout', function (_, d) {
-        svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkBlue).style('opacity', 1)
+        if (selectedState === '') {
+          svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkBlue).style('opacity', 1)
+        }
       })
-  }, [dimensions.height, dimensions.width, pData, pathsForMap.features, states])
+      .on('click', function (e, d) {
+        console.log(d)
+        setSelectedState(d.properties.name)
+      })
+  }, [dimensions.height, dimensions.width, pData, pathsForMap.features, selectedState, states])
 
   return (
     <div className={classes.container}>
       <svg ref={ref} />
       <div className={classes.text}>police killings in different states</div>
+      {selectedState !== '' && (
+        <div className={classes.resetButton} onClick={() => setSelectedState('')}>
+          Reset
+        </div>
+      )}
     </div>
   )
 }
