@@ -45,6 +45,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.typography.small,
     color: theme.colors.darkGray,
   },
+  question: {
+    ...theme.typography.larger,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    padding: '15px 0',
+    color: theme.colors.darkBlue,
+    letterSpacing: 1.1,
+  },
 }))
 
 export const GenderIncomeBarchart: React.FC = () => {
@@ -152,6 +161,11 @@ export const GenderIncomeBarchart: React.FC = () => {
         onClick={() => (!focused ? setFocused(true) : null)}
       >
         {focused && <X onClick={() => setFocused(false)} />}
+        {focused && (
+          <h1 className={classes.question}>
+            What is the distribution across sex and their salary for police violence incidents?
+          </h1>
+        )}
         <svg ref={ref} />
       </div>
       {focused && <Overlay onClick={() => setFocused(false)} />}

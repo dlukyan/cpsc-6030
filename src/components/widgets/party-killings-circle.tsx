@@ -28,12 +28,43 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.common.vizContainer('7 / 13 / 10 / 16', 'bottom right', 1.02),
   },
   containerFocused: {
-    ...theme.common.vizContainerClicked({ height: 500, width: 500, bottom: 0, right: 0 }, 'bottom right'),
+    ...theme.common.vizContainerClicked({ height: 650, width: 500, bottom: 0, right: 0 }, 'bottom right'),
   },
   text: {
     ...theme.common.flexBox,
     textAlign: 'center',
     fontSize: theme.typography.small.fontSize,
+  },
+  question: {
+    ...theme.typography.larger,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    padding: '15px 0',
+    color: theme.colors.darkBlue,
+    letterSpacing: 1.1,
+  },
+  percentages: {
+    width: '100%',
+    ...theme.common.flexBox,
+    justifyContent: 'space-between',
+  },
+  party: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  dem: {
+    textAlign: 'left',
+    color: `${theme.colors.blue} !important`,
+  },
+  rep: {
+    textAlign: 'right',
+    color: `${theme.colors.red} !important`,
+  },
+  percentage: {
+    ...theme.typography.larger,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
   },
 }))
 
@@ -56,12 +87,12 @@ export const PartyKillingsCircle: React.FC = () => {
     },
   }
 
-  useEffect(() => {
-    const pData = {
-      Democrats: (data.filter(d => d.congressperson_party === 'Democrat').length / data.length) * 100,
-      Republicans: 100 - (data.filter(d => d.congressperson_party === 'Democrat').length / data.length) * 100,
-    }
+  const pData = {
+    Democrats: (data.filter(d => d.congressperson_party === 'Democrat').length / data.length) * 100,
+    Republicans: 100 - (data.filter(d => d.congressperson_party === 'Democrat').length / data.length) * 100,
+  }
 
+  useEffect(() => {
     const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
     svgElement.selectAll('*').remove()
 
@@ -136,7 +167,7 @@ export const PartyKillingsCircle: React.FC = () => {
           ),
         ),
       )
-  }, [data, dimensions.height, dimensions.width, focused])
+  }, [data, dimensions.height, dimensions.width, focused, pData])
 
   return (
     <>
@@ -144,9 +175,26 @@ export const PartyKillingsCircle: React.FC = () => {
         className={classNames(classes.container, focused ? classes.containerFocused : classes.containerUnfocused)}
         onClick={() => (focused ? null : setFocused(true))}
       >
+        {focused && (
+          <h1 className={classes.question}>
+            How many police killings happen in democratic states vs republican states?
+          </h1>
+        )}
         <svg ref={ref} />
-        <div className={classes.text}>police killing location&apos;s party dominance</div>
+        {!focused && <div className={classes.text}>police killing location&apos;s party dominance</div>}
         {focused && <X onClick={() => setFocused(false)} />}
+        {focused && (
+          <div className={classes.percentages}>
+            <div className={classNames(classes.party, classes.dem)}>
+              <div className={classNames(classes.percentage, classes.dem)}>{pData.Democrats.toFixed(2)}%</div>
+              <div>Democratic States</div>
+            </div>
+            <div className={classNames(classes.party, classes.rep)}>
+              <div className={classNames(classes.percentage, classes.rep)}>{pData.Republicans.toFixed(2)}%</div>
+              <div>Republican States</div>
+            </div>
+          </div>
+        )}
       </div>
       {focused && <Overlay onClick={() => setFocused(false)} />}
     </>

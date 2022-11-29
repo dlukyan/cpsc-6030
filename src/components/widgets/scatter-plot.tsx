@@ -38,6 +38,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.typography.small,
     color: theme.colors.darkGray,
   },
+  question: {
+    ...theme.typography.larger,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    padding: '15px 0',
+    color: theme.colors.darkBlue,
+    letterSpacing: 1.1,
+  },
 }))
 
 export const ScatterPlot: React.FC = () => {
@@ -187,6 +196,12 @@ export const ScatterPlot: React.FC = () => {
         className={classNames(classes.container, focused ? classes.containerFocused : classes.containerUnfocused)}
         onClick={() => (!focused ? setFocused(true) : null)}
       >
+        {focused && (
+          <h1 className={classes.question}>
+            Is there a correlation between the average household income in the area a police killing happened and the
+            victims age?
+          </h1>
+        )}
         <svg ref={ref} />
         {focused && <X onClick={() => setFocused(false)} />}
       </div>
