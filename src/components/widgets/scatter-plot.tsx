@@ -169,7 +169,9 @@ export const ScatterPlot: React.FC = () => {
       })
       .on('mouseout', function () {
         if (focused) {
-          d3.select(this).attr('r', 1.5).style('fill', theme.colors.darkRed)
+          d3.select(this)
+            .attr('r', focused ? 2.5 : 1.5)
+            .style('fill', theme.colors.darkRed)
 
           incomeText.text(`Income: `)
           ageText.text(`Age: `)

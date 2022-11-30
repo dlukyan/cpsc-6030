@@ -45,6 +45,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     padding: 10,
     cursor: 'pointer',
   },
+  stateName: {
+    ...theme.typography.larger,
+    color: theme.colors.darkBlue,
+    fontWeight: 'bold',
+  },
 }))
 
 export const Map: React.FC = () => {
@@ -85,16 +90,16 @@ export const Map: React.FC = () => {
     const path = d3.geoPath().projection(projection)
 
     let projectionSelectedState
-    let pathSelectedState
+    let pathSelectedState: d3.GeoPath<any, d3.GeoPermissibleObjects>
 
     if (selectedState !== '') {
-      projectionSelectedState = d3
-        .geoAlbersUsa()
-        .scale(dimensions.width * 2)
+      projectionSelectedState = d3.geoMercator().fitSize(
+        [dimensions.width, dimensions.height - 250],
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        // .center(mapData.features.find(f => f.properties.name === selectedState).geometry)
-        .translate([0, 0])
+        mapData.features.find(f => f.properties.name === selectedState).geometry,
+      )
+      // .center([-10, 0])
       pathSelectedState = d3.geoPath().projection(projectionSelectedState)
     }
 
@@ -123,8 +128,8 @@ export const Map: React.FC = () => {
       .attr('class', 'state')
       .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
-      .style('fill', theme.colors.darkBlue)
-      .style('cursor', 'pointer')
+      .style('fill', selectedState === '' ? theme.colors.darkBlue : theme.colors.darkRed)
+      .style('cursor', selectedState === '' ? 'pointer' : 'default')
       .on('mouseover', function () {
         if (selectedState === '') {
           d3.selectAll('.state').style('opacity', 0.5)
@@ -138,49 +143,52 @@ export const Map: React.FC = () => {
         }
       })
       .on('click', function (e, d) {
-        console.log(d)
         setSelectedState(d.properties.name)
       })
 
-    const labels = svg.append('g').attr('id', 'labels')
-    labels
-      .selectAll('text')
-      .data(pathsForMap.features)
-      .join('text')
-      .attr('text-anchor', 'middle')
-      .attr('font-size', theme.typography.smallest.fontSize)
-      .attr('fill', 'white')
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .text(d => states[d.properties.name])
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .attr('x', d => path.centroid(d)[0])
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .attr('y', d => path.centroid(d)[1])
-      .style('cursor', 'pointer')
-      .on('mouseover', function (_, d) {
-        if (selectedState === '') {
-          d3.selectAll('.state').style('opacity', 0.5)
-          svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkRed).style('opacity', 1)
-        }
-      })
-      .on('mouseout', function (_, d) {
-        if (selectedState === '') {
-          svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkBlue).style('opacity', 1)
-        }
-      })
-      .on('click', function (e, d) {
-        console.log(d)
-        setSelectedState(d.properties.name)
-      })
+    if (selectedState === '') {
+      const labels = svg.append('g').attr('id', 'labels')
+      labels
+        .selectAll('text')
+        .data(pathsForMap.features)
+        .join('text')
+        .attr('text-anchor', 'middle')
+        .attr('font-size', theme.typography.smallest.fontSize)
+        .attr('fill', 'white')
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .text(d => states[d.properties.name])
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .attr('x', d => path.centroid(d)[0])
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .attr('y', d => path.centroid(d)[1])
+        .style('cursor', 'pointer')
+        .on('mouseover', function (_, d) {
+          if (selectedState === '') {
+            d3.selectAll('.state').style('opacity', 0.5)
+            svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkRed).style('opacity', 1)
+          }
+        })
+        .on('mouseout', function (_, d) {
+          if (selectedState === '') {
+            svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkBlue).style('opacity', 1)
+          }
+        })
+        .on('click', function (e, d) {
+          console.log(d)
+          setSelectedState(d.properties.name)
+        })
+    }
   }, [dimensions.height, dimensions.width, pData, pathsForMap.features, selectedState, states])
 
   return (
     <div className={classes.container}>
       <svg ref={ref} />
-      <div className={classes.text}>police killings in different states</div>
+      <div className={selectedState === '' ? classes.text : classes.stateName}>
+        {selectedState === '' ? 'police killings in different states' : selectedState}
+      </div>
       {selectedState !== '' && (
         <div className={classes.resetButton} onClick={() => setSelectedState('')}>
           Reset
