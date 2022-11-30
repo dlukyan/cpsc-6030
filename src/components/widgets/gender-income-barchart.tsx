@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
+import censusData from '../../data/census.json'
 
 import React, { useEffect, useRef, useState } from 'react'
 import { createUseStyles } from 'react-jss'
@@ -8,6 +9,7 @@ import { PoliceViolenceDataPoint } from '../../types/police-violence'
 import { classNames } from '../../utils/classNames'
 import { Overlay } from '../overlay'
 import { X } from '../x'
+import { useSelectedState } from '../../context/selected-state-context'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -58,11 +60,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 export const GenderIncomeBarchart: React.FC = () => {
   const classes = useStyles()
+  const selectedState = useSelectedState()
 
   const [focused, setFocused] = useState<boolean>(false)
 
   const ref = useRef(null)
-  const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+
+  let data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  if (selectedState.state !== '')
+    data = data.filter(d => d.state === censusData.find(s => s.state === selectedState.state)?.state_code)
 
   const dimensions = {
     height: focused ? 300 : (window.innerHeight / 9) * 2 - 20,

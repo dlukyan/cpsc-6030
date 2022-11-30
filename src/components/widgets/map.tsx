@@ -3,11 +3,12 @@ import rawData from '../../data/data_cleansed.json'
 import mapData from '../../data/us-states.json'
 import censusData from '../../data/census.json'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
 import { CensusDataPoint } from '../../types/census'
+import { useSelectedState } from '../../context/selected-state-context'
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
@@ -55,8 +56,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export const Map: React.FC = () => {
   const classes = useStyles()
   const ref = useRef(null)
-
-  const [selectedState, setSelectedState] = useState<string>('')
+  const selectedState = useSelectedState()
 
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
   const census: CensusDataPoint[] = censusData as unknown as CensusDataPoint[]
@@ -92,12 +92,12 @@ export const Map: React.FC = () => {
     let projectionSelectedState
     let pathSelectedState: d3.GeoPath<any, d3.GeoPermissibleObjects>
 
-    if (selectedState !== '') {
+    if (selectedState.state !== '') {
       projectionSelectedState = d3.geoMercator().fitSize(
         [dimensions.width, dimensions.height - 250],
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        mapData.features.find(f => f.properties.name === selectedState).geometry,
+        mapData.features.find(f => f.properties.name === selectedState.state).geometry,
       )
       // .center([-10, 0])
       pathSelectedState = d3.geoPath().projection(projectionSelectedState)
@@ -117,36 +117,36 @@ export const Map: React.FC = () => {
       .attr('id', 'map')
       .selectAll('path')
       .data(
-        selectedState === ''
+        selectedState.state === ''
           ? pathsForMap.features
-          : pathsForMap.features.filter(f => f.properties.name === selectedState),
+          : pathsForMap.features.filter(f => f.properties.name === selectedState.state),
       )
       .join('path')
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .attr('d', d => (selectedState === '' ? path(d) : pathSelectedState(d)))
+      .attr('d', d => (selectedState.state === '' ? path(d) : pathSelectedState(d)))
       .attr('class', 'state')
       .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
-      .style('fill', selectedState === '' ? theme.colors.darkBlue : theme.colors.darkRed)
-      .style('cursor', selectedState === '' ? 'pointer' : 'default')
+      .style('fill', selectedState.state === '' ? theme.colors.darkBlue : theme.colors.darkRed)
+      .style('cursor', selectedState.state === '' ? 'pointer' : 'default')
       .on('mouseover', function () {
-        if (selectedState === '') {
+        if (selectedState.state === '') {
           d3.selectAll('.state').style('opacity', 0.5)
           d3.select(this).style('fill', theme.colors.darkRed).style('opacity', 1)
         }
       })
       .on('mouseout', function () {
-        if (selectedState === '') {
+        if (selectedState.state === '') {
           d3.selectAll('.state').style('opacity', 1)
           d3.select(this).style('fill', theme.colors.darkBlue)
         }
       })
       .on('click', function (e, d) {
-        setSelectedState(d.properties.name)
+        selectedState.setSelected(d.properties.name)
       })
 
-    if (selectedState === '') {
+    if (selectedState.state === '') {
       const labels = svg.append('g').attr('id', 'labels')
       labels
         .selectAll('text')
@@ -166,19 +166,18 @@ export const Map: React.FC = () => {
         .attr('y', d => path.centroid(d)[1])
         .style('cursor', 'pointer')
         .on('mouseover', function (_, d) {
-          if (selectedState === '') {
+          if (selectedState.state === '') {
             d3.selectAll('.state').style('opacity', 0.5)
             svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkRed).style('opacity', 1)
           }
         })
         .on('mouseout', function (_, d) {
-          if (selectedState === '') {
+          if (selectedState.state === '') {
             svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkBlue).style('opacity', 1)
           }
         })
         .on('click', function (e, d) {
-          console.log(d)
-          setSelectedState(d.properties.name)
+          selectedState.setSelected(d.properties.name)
         })
     }
   }, [dimensions.height, dimensions.width, pData, pathsForMap.features, selectedState, states])
@@ -186,11 +185,11 @@ export const Map: React.FC = () => {
   return (
     <div className={classes.container}>
       <svg ref={ref} />
-      <div className={selectedState === '' ? classes.text : classes.stateName}>
-        {selectedState === '' ? 'police killings in different states' : selectedState}
+      <div className={selectedState.state === '' ? classes.text : classes.stateName}>
+        {selectedState.state === '' ? 'police killings in different states' : selectedState.state}
       </div>
-      {selectedState !== '' && (
-        <div className={classes.resetButton} onClick={() => setSelectedState('')}>
+      {selectedState.state !== '' && (
+        <div className={classes.resetButton} onClick={() => selectedState.setSelected('')}>
           Reset
         </div>
       )}

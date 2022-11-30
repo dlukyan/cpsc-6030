@@ -46,6 +46,7 @@ export const ArcChart: React.FC<{
 
   useEffect(() => {
     const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', 150)
+    svgElement.selectAll('*').remove()
 
     const container = svgElement.append('g').attr('transform', `translate(${dimensions.width / 2}, 150)`)
 

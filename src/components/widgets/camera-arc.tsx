@@ -1,11 +1,17 @@
 import rawData from '../../data/data_cleansed.json'
+import censusData from '../../data/census.json'
 
 import React from 'react'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
 import { ArcChart } from '../vizulizations/arc-chart'
+import { useSelectedState } from '../../context/selected-state-context'
 
 export const CameraArc: React.FC = () => {
-  const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  const selectedState = useSelectedState()
+
+  let data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  if (selectedState.state !== '')
+    data = data.filter(d => d.state === censusData.find(s => s.state === selectedState.state)?.state_code)
 
   const dimensions = {
     height: (window.innerHeight / 9) * 3 - 20,

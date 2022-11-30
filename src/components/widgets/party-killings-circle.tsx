@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
+import censusData from '../../data/census.json'
 
 import React, { useEffect, useRef, useState } from 'react'
 import { createUseStyles } from 'react-jss'
@@ -12,6 +13,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { Overlay } from '../overlay'
 import { X } from '../x'
 import { classNames } from '../../utils/classNames'
+import { useSelectedState } from '../../context/selected-state-context'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -70,11 +72,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 export const PartyKillingsCircle: React.FC = () => {
   const classes = useStyles()
+  const selectedState = useSelectedState()
+
   const ref = useRef(null)
 
   const [focused, setFocused] = useState<boolean>(false)
 
-  const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  let data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  if (selectedState.state !== '')
+    data = data.filter(d => d.state === censusData.find(s => s.state === selectedState.state)?.state_code)
 
   const dimensions = {
     height: focused ? 350 : (window.innerHeight / 9) * 3 - 40,
@@ -161,9 +167,9 @@ export const PartyKillingsCircle: React.FC = () => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           (d.data[0] as Party) === 'Democrats' ? (
-            <DemocratIcon scale={focused ? 1.5 : 0.8} />
+            <>{pData.Democrats > 0 ? <DemocratIcon scale={focused ? 1.5 : 0.8} /> : null}</>
           ) : (
-            <RepublicanIcon scale={focused ? 1.5 : 0.8} />
+            <>{pData.Republicans > 0 ? <RepublicanIcon scale={focused ? 1.5 : 0.8} /> : null}</>
           ),
         ),
       )
@@ -176,9 +182,7 @@ export const PartyKillingsCircle: React.FC = () => {
         onClick={() => (focused ? null : setFocused(true))}
       >
         {focused && (
-          <h1 className={classes.question}>
-            How many police killings happen in democratic states vs republican states?
-          </h1>
+          <h1 className={classes.question}>How many police killings happen in democratic areas vs republican areas?</h1>
         )}
         <svg ref={ref} />
         {!focused && <div className={classes.text}>police killing location&apos;s party dominance</div>}
@@ -187,11 +191,11 @@ export const PartyKillingsCircle: React.FC = () => {
           <div className={classes.percentages}>
             <div className={classNames(classes.party, classes.dem)}>
               <div className={classNames(classes.percentage, classes.dem)}>{pData.Democrats.toFixed(2)}%</div>
-              <div>Democratic States</div>
+              <div>Democratic Areas</div>
             </div>
             <div className={classNames(classes.party, classes.rep)}>
               <div className={classNames(classes.percentage, classes.rep)}>{pData.Republicans.toFixed(2)}%</div>
-              <div>Republican States</div>
+              <div>Republican Areas</div>
             </div>
           </div>
         )}
