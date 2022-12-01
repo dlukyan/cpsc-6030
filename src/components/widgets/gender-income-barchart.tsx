@@ -39,7 +39,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   percentage: {
     ...theme.typography.largest,
-    color: theme.colors.darkRed,
+    color: theme.colors.darkBlue,
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
@@ -53,7 +53,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontStyle: 'italic',
     textAlign: 'center',
     padding: '15px 0',
-    color: theme.colors.darkBlue,
+    color: theme.colors.darkRed,
     letterSpacing: 1.1,
   },
 }))
@@ -124,7 +124,7 @@ export const GenderIncomeBarchart: React.FC = () => {
       .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
       .attr('height', () => yScale.bandwidth() / 2)
       .attr('width', () => 1)
-      .attr('fill', () => theme.colors.darkRed)
+      .attr('fill', () => theme.colors.darkBlue)
       .on('mouseover', function () {
         if (focused)
           d3.select(this)
@@ -133,7 +133,7 @@ export const GenderIncomeBarchart: React.FC = () => {
             // @ts-ignore
             .attr('y', d => (d.gender === 'Female' ? 0 : yScale(d.gender) / 1.3))
             .attr('width', () => 3)
-            .attr('fill', () => theme.colors.darkBlue)
+            .attr('fill', () => theme.colors.darkRed)
       })
       .on('mouseout', function () {
         if (focused)
@@ -143,7 +143,7 @@ export const GenderIncomeBarchart: React.FC = () => {
             // @ts-ignore
             .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
             .attr('width', () => 1)
-            .attr('fill', () => theme.colors.darkRed)
+            .attr('fill', () => theme.colors.darkBlue)
       })
       .transition()
       .duration(1500)

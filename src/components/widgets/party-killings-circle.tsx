@@ -43,7 +43,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontStyle: 'italic',
     textAlign: 'center',
     padding: '15px 0',
-    color: theme.colors.darkBlue,
+    color: theme.colors.darkRed,
     letterSpacing: 1.1,
   },
   percentages: {

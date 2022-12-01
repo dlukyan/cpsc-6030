@@ -40,7 +40,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     position: 'absolute',
     top: '70vh',
     left: '74vw',
-    backgroundColor: theme.colors.darkRed,
+    backgroundColor: theme.colors.darkBlue,
     borderRadius: 5,
     color: theme.colors.white,
     padding: 10,
@@ -48,7 +48,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   stateName: {
     ...theme.typography.larger,
-    color: theme.colors.darkBlue,
+    color: theme.colors.darkRed,
     fontWeight: 'bold',
   },
 }))
@@ -128,7 +128,7 @@ export const Map: React.FC = () => {
       .attr('class', 'state')
       .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
-      .style('fill', selectedState.state === '' ? theme.colors.darkBlue : theme.colors.darkRed)
+      .style('fill', theme.colors.darkBlue)
       .style('cursor', selectedState.state === '' ? 'pointer' : 'default')
       .on('mouseover', function () {
         if (selectedState.state === '') {

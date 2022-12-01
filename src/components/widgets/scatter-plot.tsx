@@ -32,7 +32,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   percentage: {
     ...theme.typography.largest,
-    color: theme.colors.darkRed,
+    color: theme.colors.darkBlue,
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
@@ -46,7 +46,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontStyle: 'italic',
     textAlign: 'center',
     padding: '15px 0',
-    color: theme.colors.darkBlue,
+    color: theme.colors.darkRed,
     letterSpacing: 1.1,
   },
 }))
@@ -164,10 +164,10 @@ export const ScatterPlot: React.FC = () => {
         return yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom
       })
       .attr('r', focused ? 2.5 : 1.5)
-      .style('fill', theme.colors.darkRed)
+      .style('fill', theme.colors.darkBlue)
       .on('mouseover', function (_, d) {
         if (focused) {
-          d3.select(this).attr('r', 7).style('fill', theme.colors.darkBlue)
+          d3.select(this).attr('r', 7).style('fill', theme.colors.darkRed)
 
           incomeText.text(`Income: ${priceStrFormatter.format(d.hhincome_median_census_tract)}`)
           ageText.text(`Age: ${d.age}`)
@@ -177,7 +177,7 @@ export const ScatterPlot: React.FC = () => {
         if (focused) {
           d3.select(this)
             .attr('r', focused ? 2.5 : 1.5)
-            .style('fill', theme.colors.darkRed)
+            .style('fill', theme.colors.darkBlue)
 
           incomeText.text(`Income: `)
           ageText.text(`Age: `)
