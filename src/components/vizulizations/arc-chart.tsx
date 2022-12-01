@@ -33,16 +33,19 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }))
 
 export const ArcChart: React.FC<{
-  percentage: number
+  democraticPercentage: number
+  republicanPercentage: number
   text: string
   dimensions: { height: number; width: number }
   gridArea: string
   origin: string
   id: string
-}> = ({ percentage, text, dimensions, gridArea, id, origin }) => {
+}> = ({ democraticPercentage, republicanPercentage, text, dimensions, gridArea, id, origin }) => {
   const classes = useStyles()
 
   const ref = useRef(null)
+
+  const totalPercentage = democraticPercentage + republicanPercentage
 
   useEffect(() => {
     const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', 150)
@@ -72,7 +75,7 @@ export const ArcChart: React.FC<{
     container
       .append('path')
       .attr('class', 'arc')
-      .attr('id', `${id}-arc`)
+      .attr('id', `${id}-dem-arc`)
       .attr(
         'd',
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -82,7 +85,7 @@ export const ArcChart: React.FC<{
           .innerRadius(innerR)
           .outerRadius(outerR)
           .startAngle(-90 * (Math.PI / 180))
-          .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+          .endAngle(((democraticPercentage * 180) / 100 - 90) * (Math.PI / 180)),
       )
       .attr('fill', theme.colors.blue)
       .on('mouseover', function () {
@@ -95,7 +98,7 @@ export const ArcChart: React.FC<{
             .innerRadius(innerR - 5)
             .outerRadius(outerR + 5)
             .startAngle(-90 * (Math.PI / 180))
-            .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+            .endAngle(((democraticPercentage * 180) / 100 - 90) * (Math.PI / 180)),
         )
 
         d3.select(`text#${id}-text`).attr('font-size', theme.typography.moreLarge.fontSize - 5)
@@ -110,7 +113,56 @@ export const ArcChart: React.FC<{
             .innerRadius(innerR)
             .outerRadius(outerR)
             .startAngle(-90 * (Math.PI / 180))
-            .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+            .endAngle(((democraticPercentage * 180) / 100 - 90) * (Math.PI / 180)),
+        )
+
+        d3.select(`text#${id}-text`).attr('font-size', theme.typography.moreLarge.fontSize)
+      })
+      .transition()
+      .duration(1500)
+
+    container
+      .append('path')
+      .attr('class', 'arc')
+      .attr('id', `${id}-rep-arc`)
+      .attr(
+        'd',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        d3
+          .arc()
+          .innerRadius(innerR)
+          .outerRadius(outerR)
+          .startAngle(((democraticPercentage * 180) / 100 - 90) * (Math.PI / 180))
+          .endAngle((((republicanPercentage + democraticPercentage) * 180) / 100 - 90) * (Math.PI / 180)),
+      )
+      .attr('fill', theme.colors.red)
+      .on('mouseover', function () {
+        d3.select(this).attr(
+          'd',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          d3
+            .arc()
+            .innerRadius(innerR - 5)
+            .outerRadius(outerR + 5)
+            .startAngle(((democraticPercentage * 180) / 100 - 90) * (Math.PI / 180))
+            .endAngle((((republicanPercentage + democraticPercentage) * 180) / 100 - 90) * (Math.PI / 180)),
+        )
+
+        d3.select(`text#${id}-text`).attr('font-size', theme.typography.moreLarge.fontSize - 5)
+      })
+      .on('mouseout', function () {
+        d3.select(this).attr(
+          'd',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          d3
+            .arc()
+            .innerRadius(innerR)
+            .outerRadius(outerR)
+            .startAngle(((democraticPercentage * 180) / 100 - 90) * (Math.PI / 180))
+            .endAngle((((republicanPercentage + democraticPercentage) * 180) / 100 - 90) * (Math.PI / 180)),
         )
 
         d3.select(`text#${id}-text`).attr('font-size', theme.typography.moreLarge.fontSize)
@@ -120,12 +172,12 @@ export const ArcChart: React.FC<{
 
     container
       .append('text')
-      .text(`${percentage}%`)
+      .text(`${totalPercentage}%`)
       .attr('font-size', theme.typography.moreLarge.fontSize)
       .attr('font-weight', 'bold')
       .attr('font-style', 'italic')
       .attr('id', `${id}-text`)
-      .style('fill', theme.colors.blue)
+      .style('fill', theme.colors.primary)
       .style('text-anchor', 'middle')
       .style('cursor', 'default')
       .attr('y', -10)
@@ -141,7 +193,7 @@ export const ArcChart: React.FC<{
             .innerRadius(innerR - 5)
             .outerRadius(outerR + 5)
             .startAngle(-90 * (Math.PI / 180))
-            .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+            .endAngle(((democraticPercentage * 180) / 100 - 90) * (Math.PI / 180)),
         )
       })
       .on('mouseout', function () {
@@ -156,15 +208,18 @@ export const ArcChart: React.FC<{
             .innerRadius(innerR)
             .outerRadius(outerR)
             .startAngle(-90 * (Math.PI / 180))
-            .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
+            .endAngle(((democraticPercentage * 180) / 100 - 90) * (Math.PI / 180)),
         )
       })
-  }, [dimensions.height, dimensions.width, id, percentage])
+  }, [dimensions.height, dimensions.width, id, democraticPercentage, republicanPercentage, totalPercentage])
 
   return (
     <div className={classes.container} style={{ gridArea, transformOrigin: origin }}>
       <svg ref={ref} />
-      <div className={classes.text}>{text}</div>
+      <div className={classes.text}>
+        {text} with <b style={{ color: theme.colors.blue }}>{democraticPercentage}%</b> happening in democratic areas,
+        and <b style={{ color: theme.colors.red }}>{republicanPercentage}%</b> happening in republican areas.
+      </div>
     </div>
   )
 }

@@ -18,8 +18,22 @@ export const AttackArc: React.FC = () => {
     width: (window.innerWidth / 15) * 3 - 20,
   }
 
-  const percentage = Math.round(
-    (data.filter(d => d.wapo_threat_level === 'Attack' || d.wapo_threat_level === 'Brandished Weapon').length /
+  const democraticPercentage = Math.round(
+    (data.filter(
+      d =>
+        d.congressperson_party === 'Democrat' &&
+        (d.wapo_threat_level === 'Attack' || d.wapo_threat_level === 'Brandished Weapon'),
+    ).length /
+      data.length) *
+      100,
+  )
+
+  const republicanPercentage = Math.round(
+    (data.filter(
+      d =>
+        d.congressperson_party === 'Republican' &&
+        (d.wapo_threat_level === 'Attack' || d.wapo_threat_level === 'Brandished Weapon'),
+    ).length /
       data.length) *
       100,
   )
@@ -28,7 +42,8 @@ export const AttackArc: React.FC = () => {
 
   return (
     <ArcChart
-      percentage={percentage}
+      democraticPercentage={democraticPercentage}
+      republicanPercentage={republicanPercentage}
       text={'of police killings include a suspect attacking an officer'}
       dimensions={dimensions}
       gridArea={gridArea}

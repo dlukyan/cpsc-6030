@@ -18,13 +18,21 @@ export const CameraArc: React.FC = () => {
     width: (window.innerWidth / 15) * 3 - 20,
   }
 
-  const percentage = Math.round((data.filter(d => d.wapo_body_ccamera === 'Yes').length / data.length) * 100)
+  const democraticPercentage = Math.round(
+    (data.filter(d => d.congressperson_party === 'Democrat' && d.wapo_body_ccamera === 'Yes').length / data.length) *
+      100,
+  )
+  const republicanPercentage = Math.round(
+    (data.filter(d => d.congressperson_party === 'Republican' && d.wapo_body_ccamera === 'Yes').length / data.length) *
+      100,
+  )
 
   const gridArea = '4 / 1 / 7 / 4'
 
   return (
     <ArcChart
-      percentage={percentage}
+      democraticPercentage={democraticPercentage}
+      republicanPercentage={republicanPercentage}
       text={'of police killings include an officer wearing a body cam'}
       dimensions={dimensions}
       gridArea={gridArea}

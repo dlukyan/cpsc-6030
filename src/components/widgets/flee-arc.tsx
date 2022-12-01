@@ -18,8 +18,21 @@ export const FleeArc: React.FC = () => {
     width: (window.innerWidth / 15) * 3 - 20,
   }
 
-  const percentage = Math.round(
-    (data.filter(d => d.wapo_flee === 'Car' || d.wapo_flee === 'Car, Foot' || d.wapo_flee === 'Foot').length /
+  const democraticPercentage = Math.round(
+    (data.filter(
+      d =>
+        d.congressperson_party === 'Democrat' &&
+        (d.wapo_flee === 'Car' || d.wapo_flee === 'Car, Foot' || d.wapo_flee === 'Foot'),
+    ).length /
+      data.length) *
+      100,
+  )
+  const republicanPercentage = Math.round(
+    (data.filter(
+      d =>
+        d.congressperson_party === 'Republican' &&
+        (d.wapo_flee === 'Car' || d.wapo_flee === 'Car, Foot' || d.wapo_flee === 'Foot'),
+    ).length /
       data.length) *
       100,
   )
@@ -28,7 +41,8 @@ export const FleeArc: React.FC = () => {
 
   return (
     <ArcChart
-      percentage={percentage}
+      democraticPercentage={democraticPercentage}
+      republicanPercentage={republicanPercentage}
       text={'of police killings include a suspect trying to flee'}
       dimensions={dimensions}
       gridArea={gridArea}

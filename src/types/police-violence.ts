@@ -4,7 +4,7 @@ export interface PoliceViolenceDataPoint {
   call_for_service: string
   cause_of_death: string
   city: string
-  congressperson_party: string
+  congressperson_party: 'Democrat' | 'Republican'
   county: string
   date: string
   disposition_official: string
