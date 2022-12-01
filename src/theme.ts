@@ -10,8 +10,6 @@ const colors = {
   secondary: '#8274ff',
   blue: '#3661ff',
   red: '#f84040',
-  darkBlue: '#00218a',
-  darkRed: '#960000',
 }
 
 const maxWidthMedia = (size: number) => `@media screen and (max-width: ${size}px)`
@@ -51,7 +49,7 @@ const headerTypography = {
   fontWeight: 'bold',
   fontStyle: 'italic',
   textTransform: 'uppercase',
-  background: `-webkit-linear-gradient(1deg, ${colors.darkBlue}, ${colors.darkRed} 100%)`,
+  background: `-webkit-linear-gradient(1deg, ${colors.blue}, ${colors.red} 100%)`,
   '-webkit-background-clip': 'text',
   '-webkit-text-fill-color': 'transparent',
   textAlign: 'center',

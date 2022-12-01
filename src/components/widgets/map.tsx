@@ -40,7 +40,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     position: 'absolute',
     top: '70vh',
     left: '74vw',
-    backgroundColor: theme.colors.darkBlue,
+    backgroundColor: theme.colors.blue,
     borderRadius: 5,
     color: theme.colors.white,
     padding: 10,
@@ -48,7 +48,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   stateName: {
     ...theme.typography.larger,
-    color: theme.colors.darkRed,
+    color: theme.colors.red,
     fontWeight: 'bold',
   },
 }))
@@ -128,18 +128,18 @@ export const Map: React.FC = () => {
       .attr('class', 'state')
       .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
-      .style('fill', theme.colors.darkBlue)
+      .style('fill', theme.colors.blue)
       .style('cursor', selectedState.state === '' ? 'pointer' : 'default')
       .on('mouseover', function () {
         if (selectedState.state === '') {
           d3.selectAll('.state').style('opacity', 0.5)
-          d3.select(this).style('fill', theme.colors.darkRed).style('opacity', 1)
+          d3.select(this).style('fill', theme.colors.red).style('opacity', 1)
         }
       })
       .on('mouseout', function () {
         if (selectedState.state === '') {
           d3.selectAll('.state').style('opacity', 1)
-          d3.select(this).style('fill', theme.colors.darkBlue)
+          d3.select(this).style('fill', theme.colors.blue)
         }
       })
       .on('click', function (e, d) {
@@ -168,12 +168,12 @@ export const Map: React.FC = () => {
         .on('mouseover', function (_, d) {
           if (selectedState.state === '') {
             d3.selectAll('.state').style('opacity', 0.5)
-            svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkRed).style('opacity', 1)
+            svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.red).style('opacity', 1)
           }
         })
         .on('mouseout', function (_, d) {
           if (selectedState.state === '') {
-            svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.darkBlue).style('opacity', 1)
+            svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.blue).style('opacity', 1)
           }
         })
         .on('click', function (e, d) {

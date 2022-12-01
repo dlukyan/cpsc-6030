@@ -26,7 +26,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     position: 'absolute',
     ...theme.typography.largest,
 
-    color: theme.colors.darkBlue,
+    color: theme.colors.blue,
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
@@ -84,7 +84,7 @@ export const ArcChart: React.FC<{
           .startAngle(-90 * (Math.PI / 180))
           .endAngle(((percentage * 180) / 100 - 90) * (Math.PI / 180)),
       )
-      .attr('fill', theme.colors.darkBlue)
+      .attr('fill', theme.colors.blue)
       .on('mouseover', function () {
         d3.select(this).attr(
           'd',
@@ -125,7 +125,7 @@ export const ArcChart: React.FC<{
       .attr('font-weight', 'bold')
       .attr('font-style', 'italic')
       .attr('id', `${id}-text`)
-      .style('fill', theme.colors.darkBlue)
+      .style('fill', theme.colors.blue)
       .style('text-anchor', 'middle')
       .style('cursor', 'default')
       .attr('y', -10)
