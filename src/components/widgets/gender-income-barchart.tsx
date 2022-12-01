@@ -169,7 +169,7 @@ export const GenderIncomeBarchart: React.FC = () => {
         {focused && <X onClick={() => setFocused(false)} />}
         {focused && (
           <h1 className={classes.question}>
-            What is the distribution across sex and their salary for police violence incidents?
+            What is the distribution across sex and the average household income in the area a police killing happened?
           </h1>
         )}
         <svg ref={ref} />
