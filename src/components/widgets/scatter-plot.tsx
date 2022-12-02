@@ -46,8 +46,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontStyle: 'italic',
     textAlign: 'center',
     padding: '15px 0',
-    color: theme.colors.red,
-    letterSpacing: 1.1,
+    color: theme.colors.primary,
+    letterSpacing: 1.02,
   },
 }))
 
@@ -154,7 +154,7 @@ export const ScatterPlot: React.FC = () => {
     svg
       .append('g')
       .selectAll('dot')
-      .data(data)
+      .data(data.filter(d => d.congressperson_party === 'Democrat'))
       .enter()
       .append('circle')
       .attr('cx', function (d) {
@@ -167,7 +167,7 @@ export const ScatterPlot: React.FC = () => {
       .style('fill', theme.colors.blue)
       .on('mouseover', function (_, d) {
         if (focused) {
-          d3.select(this).attr('r', 7).style('fill', theme.colors.red)
+          d3.select(this).attr('r', 7)
 
           incomeText.text(`Income: ${priceStrFormatter.format(d.hhincome_median_census_tract)}`)
           ageText.text(`Age: ${d.age}`)
@@ -175,9 +175,40 @@ export const ScatterPlot: React.FC = () => {
       })
       .on('mouseout', function () {
         if (focused) {
-          d3.select(this)
-            .attr('r', focused ? 2.5 : 1.5)
-            .style('fill', theme.colors.blue)
+          d3.select(this).attr('r', focused ? 2.5 : 1.5)
+
+          incomeText.text(`Income: `)
+          ageText.text(`Age: `)
+        }
+      })
+      .transition()
+      .duration(1500)
+
+    svg
+      .append('g')
+      .selectAll('dot')
+      .data(data.filter(d => d.congressperson_party === 'Republican'))
+      .enter()
+      .append('circle')
+      .attr('cx', function (d) {
+        return xScale(d.age)
+      })
+      .attr('cy', function (d) {
+        return yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom
+      })
+      .attr('r', focused ? 2.5 : 1.5)
+      .style('fill', theme.colors.red)
+      .on('mouseover', function (_, d) {
+        if (focused) {
+          d3.select(this).attr('r', 7)
+
+          incomeText.text(`Income: ${priceStrFormatter.format(d.hhincome_median_census_tract)}`)
+          ageText.text(`Age: ${d.age}`)
+        }
+      })
+      .on('mouseout', function () {
+        if (focused) {
+          d3.select(this).attr('r', focused ? 2.5 : 1.5)
 
           incomeText.text(`Income: `)
           ageText.text(`Age: `)

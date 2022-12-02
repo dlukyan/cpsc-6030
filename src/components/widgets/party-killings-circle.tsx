@@ -43,8 +43,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontStyle: 'italic',
     textAlign: 'center',
     padding: '15px 0',
-    color: theme.colors.red,
-    letterSpacing: 1.1,
+    color: theme.colors.primary,
+    letterSpacing: 1.02,
   },
   percentages: {
     width: '100%',
