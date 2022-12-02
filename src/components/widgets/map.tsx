@@ -48,7 +48,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   stateName: {
     ...theme.typography.larger,
-    color: theme.colors.red,
+    color: theme.colors.primary,
     fontWeight: 'bold',
   },
 }))
@@ -59,13 +59,29 @@ export const Map: React.FC = () => {
   const selectedState = useSelectedState()
 
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  const dataPerStateByParty: { [stateCode: string]: { total: number; d: number; r: number } } = {}
+  data.map(d => {
+    if (d.state !== 'District of Columbia') {
+      if (dataPerStateByParty[d.state] === undefined) {
+        dataPerStateByParty[d.state] = { total: 0, r: 0, d: 0 }
+      }
+      if (d.congressperson_party === 'Democrat') dataPerStateByParty[d.state].d += 1
+      else dataPerStateByParty[d.state].r += 1
+      dataPerStateByParty[d.state].total += 1
+    }
+  })
+
   const census: CensusDataPoint[] = censusData as unknown as CensusDataPoint[]
-  const states = census.reduce((obj, item) => {
+  const states: { [state: string]: string } = census.reduce((obj, item) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     obj[item.state] = item.state_code
     return obj
   }, {})
+
+  const stateWithMostKillings = Math.max(
+    ...Object.values(Object.keys(states).map(s => dataPerStateByParty[states[s]].total)),
+  )
 
   const pathsForMap = mapData //d3.json("https://s3-us-west-2.amazonaws.com/s.cdpn.io/25240/us-states.json")
 
@@ -128,18 +144,26 @@ export const Map: React.FC = () => {
       .attr('class', 'state')
       .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
-      .style('fill', theme.colors.blue)
+      .style('fill', d =>
+        dataPerStateByParty[states[d.properties.name]]?.r > dataPerStateByParty[states[d.properties.name]]?.d
+          ? theme.colors.red
+          : theme.colors.blue,
+      )
+      .style(
+        'opacity',
+        d => data.filter(killing => killing.state === states[d.properties.name]).length / stateWithMostKillings + 0.2,
+      )
       .style('cursor', selectedState.state === '' ? 'pointer' : 'default')
       .on('mouseover', function () {
         if (selectedState.state === '') {
-          d3.selectAll('.state').style('opacity', 0.5)
-          d3.select(this).style('fill', theme.colors.red).style('opacity', 1)
+          // d3.selectAll('.state').style('opacity', 0.5)
+          // d3.select(this).style('fill', theme.colors.red).style('opacity', 1)
         }
       })
       .on('mouseout', function () {
         if (selectedState.state === '') {
-          d3.selectAll('.state').style('opacity', 1)
-          d3.select(this).style('fill', theme.colors.blue)
+          // d3.selectAll('.state').style('opacity', 1)
+          // d3.select(this).style('fill', theme.colors.blue)
         }
       })
       .on('click', function (e, d) {
@@ -167,20 +191,32 @@ export const Map: React.FC = () => {
         .style('cursor', 'pointer')
         .on('mouseover', function (_, d) {
           if (selectedState.state === '') {
-            d3.selectAll('.state').style('opacity', 0.5)
-            svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.red).style('opacity', 1)
+            console.log(_, d)
+            // d3.selectAll('.state').style('opacity', 0.5)
+            // svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.red).style('opacity', 1)
           }
         })
         .on('mouseout', function (_, d) {
           if (selectedState.state === '') {
-            svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.blue).style('opacity', 1)
+            console.log(_, d)
+            // svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.blue).style('opacity', 1)
           }
         })
         .on('click', function (e, d) {
           selectedState.setSelected(d.properties.name)
         })
     }
-  }, [dimensions.height, dimensions.width, pData, pathsForMap.features, selectedState, states])
+  }, [
+    data,
+    dataPerStateByParty,
+    dimensions.height,
+    dimensions.width,
+    pData,
+    pathsForMap.features,
+    selectedState,
+    stateWithMostKillings,
+    states,
+  ])
 
   return (
     <div className={classes.container}>
