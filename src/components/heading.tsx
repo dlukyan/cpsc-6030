@@ -7,8 +7,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   text: {
     ...theme.typography.heading,
     gridArea: '1 / 4 / 3 / 13',
-    borderLeft: `1px solid ${theme.colors.empty}`,
-    borderRight: `1px solid ${theme.colors.empty}`,
+    // borderLeft: `1px solid ${theme.colors.empty}`,
+    // borderRight: `1px solid ${theme.colors.empty}`,
     padding: 10,
     height: '100%',
     width: 'auto',
