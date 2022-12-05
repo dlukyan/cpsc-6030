@@ -67,6 +67,7 @@ export const GenderIncomeBarchart: React.FC = () => {
   const ref = useRef(null)
 
   let data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  const genders = new Set(data.map(d => d.gender))
   if (selectedState.state !== '')
     data = data.filter(d => d.state === censusData.find(s => s.state === selectedState.state)?.state_code)
 
@@ -85,11 +86,7 @@ export const GenderIncomeBarchart: React.FC = () => {
     .scaleLinear()
     .domain([0, Math.max(...data.map(d => Number(d.hhincome_median_census_tract)))])
     .range([dimensions.margin.left, dimensions.width - dimensions.margin.right])
-  const yScale = d3
-    .scaleBand()
-    .domain([...new Set(data.map(d => d.gender))])
-    .range([dimensions.height, dimensions.margin.bottom])
-    .padding(0.1)
+  const yScale = d3.scaleBand().domain(genders).range([dimensions.height, dimensions.margin.bottom]).padding(0.1)
 
   useEffect(() => {
     const svg = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
