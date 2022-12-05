@@ -116,6 +116,16 @@ export const ScatterPlot: React.FC = () => {
       .call(d3.axisLeft(yScale).tickFormat(d => (d === 0 ? d : d / 1000 + 'K')))
       .attr('transform', 'translate(' + dimensions.margin.left + ', ' + -dimensions.margin.bottom + ')')
 
+    d3.select('body')
+      .append('div')
+      .attr('id', 'tooltip')
+      .attr('style', 'position: absolute; opacity: 0; z-index: 1000')
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+
     svg
       .append('text')
       .attr(
@@ -129,32 +139,11 @@ export const ScatterPlot: React.FC = () => {
       .style('text-anchor', 'middle')
       .style('font-size', 14)
       .text('Location household average income')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let incomeText: any = null
-    if (focused)
-      incomeText = svg
-        .append('text')
-        .attr('id', 'income-text')
-        .attr('transform', `translate(${dimensions.width - 120} , ${dimensions.margin.top + 10})`)
-        .style('text-anchor', 'start')
-        .style('font-size', 14)
-        .text('Income: ')
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let ageText: any = null
-    if (focused)
-      ageText = svg
-        .append('text')
-        .attr('id', 'age-text')
-        .attr('transform', `translate(${dimensions.width - 120} , ${dimensions.margin.top + 30})`)
-        .style('text-anchor', 'start')
-        .style('font-size', 14)
-        .text('Age: ')
 
     svg
       .append('g')
       .selectAll('dot')
-      .data(data.filter(d => d.congressperson_party === 'Democrat'))
+      .data(data)
       .enter()
       .append('circle')
       .attr('cx', function (d) {
@@ -164,55 +153,31 @@ export const ScatterPlot: React.FC = () => {
         return yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom
       })
       .attr('r', focused ? 2.5 : 1.5)
-      .style('fill', theme.colors.blue)
+      .attr('fill', d => d.congressperson_party === 'Democrat' ? theme.colors.blue : theme.colors.red)
       .on('mouseover', function (_, d) {
         if (focused) {
           d3.select(this).attr('r', 7)
 
-          incomeText.text(`Income: ${priceStrFormatter.format(d.hhincome_median_census_tract)}`)
-          ageText.text(`Age: ${d.age}`)
+          d3.select('#tooltip')
+            .style('left', _.pageX + 'px')
+            .style('top', _.pageY + 'px')
+            .style('opacity', 1)
+            .html('Name: ' + d.name + '<br/>Age: ' + d.age + '<br/>Date: ' + new Date(d.date).toDateString() + '<br/>Area income: ' + priceStrFormatter.format(d.hhincome_median_census_tract))
         }
       })
       .on('mouseout', function () {
         if (focused) {
           d3.select(this).attr('r', focused ? 2.5 : 1.5)
 
-          incomeText.text(`Income: `)
-          ageText.text(`Age: `)
+          d3.select('#tooltip')
+            .style('opacity', 0)
         }
       })
-      .transition()
-      .duration(1500)
-
-    svg
-      .append('g')
-      .selectAll('dot')
-      .data(data.filter(d => d.congressperson_party === 'Republican'))
-      .enter()
-      .append('circle')
-      .attr('cx', function (d) {
-        return xScale(d.age)
-      })
-      .attr('cy', function (d) {
-        return yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom
-      })
-      .attr('r', focused ? 2.5 : 1.5)
-      .style('fill', theme.colors.red)
-      .on('mouseover', function (_, d) {
-        if (focused) {
-          d3.select(this).attr('r', 7)
-
-          incomeText.text(`Income: ${priceStrFormatter.format(d.hhincome_median_census_tract)}`)
-          ageText.text(`Age: ${d.age}`)
-        }
-      })
-      .on('mouseout', function () {
-        if (focused) {
-          d3.select(this).attr('r', focused ? 2.5 : 1.5)
-
-          incomeText.text(`Income: `)
-          ageText.text(`Age: `)
-        }
+      .on('mousemove', function(e, d) {
+        if (focused)
+          d3.select('#tooltip')
+            .style('left', (e.pageX + 10) + 'px')
+            .style('top', (e.pageY + 10) + 'px')
       })
       .transition()
       .duration(1500)

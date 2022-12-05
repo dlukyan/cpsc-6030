@@ -89,6 +89,13 @@ export const GenderIncomeBarchart: React.FC = () => {
   const yScale = d3.scaleBand().domain(genders).range([dimensions.height, dimensions.margin.bottom]).padding(0.1)
 
   useEffect(() => {
+    const priceStrFormatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+
     const svg = d3.select(ref.current).attr('width', dimensions.width).attr('height', dimensions.height)
     svg.selectAll('*').remove()
 
@@ -109,42 +116,20 @@ export const GenderIncomeBarchart: React.FC = () => {
       .call(d3.axisLeft(yScale))
       .attr('transform', 'translate(' + dimensions.margin.left + ', ' + -dimensions.margin.bottom + ')')
 
-    svg
-      .append('g')
-      .selectAll('bar')
-      .data(data.filter(d => d.congressperson_party === 'Democrat'))
-      .enter()
-      .append('rect')
-      .attr('x', d => xScale(d.hhincome_median_census_tract))
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
-      .attr('height', () => yScale.bandwidth() / 2)
-      .attr('width', () => 1)
-      .attr('fill', () => theme.colors.blue)
-      .on('mouseover', function () {
-        if (focused)
-          d3.select(this)
-            .attr('height', () => yScale.bandwidth())
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            .attr('y', d => (d.gender === 'Female' ? 0 : yScale(d.gender) / 1.3))
-            .attr('width', () => 3)
-      })
-      .on('mouseout', function () {
-        if (focused)
-          d3.select(this)
-            .attr('height', () => yScale.bandwidth() / 2)
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
-            .attr('width', () => 1)
-      })
+    d3.select('body')
+      .append('div')
+      .attr('id', 'tooltip')
+      .attr('style', 'position: absolute; opacity: 0; z-index: 1000')
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
 
     svg
       .append('g')
       .selectAll('bar')
-      .data(data.filter(d => d.congressperson_party === 'Republican'))
+      .data(data)
       .enter()
       .append('rect')
       .attr('x', d => xScale(d.hhincome_median_census_tract))
@@ -153,27 +138,41 @@ export const GenderIncomeBarchart: React.FC = () => {
       .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
       .attr('height', () => yScale.bandwidth() / 2)
       .attr('width', () => 1)
-      .attr('fill', () => theme.colors.red)
-      .on('mouseover', function () {
-        if (focused)
+      .attr('fill', d => d.congressperson_party === 'Democrat' ? theme.colors.blue : theme.colors.red)
+      .on('mouseover', function (e, d) {	
+        if (focused) {
+          d3.select('#tooltip')
+            .style('left', e.pageX + 'px')
+            .style('top', e.pageY + 'px')
+            .style('opacity', 1)
+            .html('Name: ' + d.name + '<br/>Age: ' + d.age + '<br/>Date: ' + new Date(d.date).toDateString() + '<br/>Area income: ' + priceStrFormatter.format(d.hhincome_median_census_tract))
           d3.select(this)
             .attr('height', () => yScale.bandwidth())
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             .attr('y', d => (d.gender === 'Female' ? 0 : yScale(d.gender) / 1.3))
             .attr('width', () => 3)
+        }
       })
       .on('mouseout', function () {
-        if (focused)
+        if (focused) {
+          d3.select('#tooltip')
+            .style('opacity', 0)
           d3.select(this)
             .attr('height', () => yScale.bandwidth() / 2)
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
             .attr('width', () => 1)
+        }
       })
-      .transition()
-      .duration(1500)
+      .on('mousemove', function(e, d) {
+        if (focused)
+          d3.select('#tooltip')
+            .style('left', (e.pageX + 10) + 'px')
+            .style('top', (e.pageY + 10) + 'px')
+      })
+
   }, [
     dimensions.height,
     dimensions.width,
