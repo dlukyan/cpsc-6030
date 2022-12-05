@@ -48,10 +48,10 @@ export const ArcChart: React.FC<{
   const totalPercentage = democraticPercentage + republicanPercentage
 
   useEffect(() => {
-    const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', 150)
+    const svgElement = d3.select(ref.current).attr('width', dimensions.width).attr('height', 160)
     svgElement.selectAll('*').remove()
 
-    const container = svgElement.append('g').attr('transform', `translate(${dimensions.width / 2}, 150)`)
+    const container = svgElement.append('g').attr('transform', `translate(${dimensions.width / 2}, 160)`)
 
     const innerR = dimensions.width / 2 - 50
     const outerR = dimensions.width / 2 - 10
