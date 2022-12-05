@@ -2,12 +2,14 @@ import * as d3 from 'd3'
 import rawData from '../../data/data_cleansed.json'
 import mapData from '../../data/us-states.json'
 import censusData from '../../data/census.json'
+import votesData from '../../data/votes_cleaned.json'
 
 import React, { useEffect, useRef } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
 import { CensusDataPoint } from '../../types/census'
+import { VotesDataPoint } from '../../types/votes'
 import { useSelectedState } from '../../context/selected-state-context'
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -79,6 +81,9 @@ export const Map: React.FC = () => {
     return obj
   }, {})
 
+  const votes: VotesDataPoint[] = votesData as unknown as VotesDataPoint[]
+  console.log(votes)
+
   const stateWithMostKillings = Math.max(
     ...Object.values(Object.keys(states).map(s => dataPerStateByParty[states[s]].total)),
   )
@@ -145,7 +150,12 @@ export const Map: React.FC = () => {
       .attr('id', d => `state-${d.id}`)
       .style('stroke', 'white')
       .style('fill', d =>
-        dataPerStateByParty[states[d.properties.name]]?.r > dataPerStateByParty[states[d.properties.name]]?.d
+        votes.filter(
+          s => s.state_code === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
+        )[0].rep >
+        votes.filter(
+          s => s.state_code === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
+        )[0].dem
           ? theme.colors.red
           : theme.colors.blue,
       )
