@@ -59,6 +59,7 @@ export const ScatterPlot: React.FC = () => {
   const ref = useRef(null)
 
   let data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  let dataOriginal = data
   if (selectedState.state !== '')
     data = data.filter(d => d.state === censusData.find(s => s.state === selectedState.state)?.state_code)
 
@@ -75,11 +76,11 @@ export const ScatterPlot: React.FC = () => {
 
   const xScale = d3
     .scaleLinear()
-    .domain([Math.min(...data.map(d => Number(d.age))) / 2, Math.max(...data.map(d => Number(d.age)))])
+    .domain([Math.min(...dataOriginal.map(d => Number(d.age))) / 2, Math.max(...dataOriginal.map(d => Number(d.age)))])
     .range([dimensions.margin.left, dimensions.width - dimensions.margin.right])
   const yScale = d3
     .scaleLinear()
-    .domain([0, Math.max(...data.map(d => Number(d.hhincome_median_census_tract)))])
+    .domain([0, Math.max(...dataOriginal.map(d => Number(d.hhincome_median_census_tract)))])
     .range([dimensions.height, 0])
 
   useEffect(() => {
