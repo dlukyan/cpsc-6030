@@ -82,7 +82,27 @@ export const Map: React.FC = () => {
   }, {})
 
   const votes: VotesDataPoint[] = votesData as unknown as VotesDataPoint[]
-  console.log(votes)
+
+  const killPercent = census.map(c => ({
+    state: c.state_code,
+    ratio: Number(
+      (
+        (1000000 * data.filter(d => d.state === c.state_code).length) /
+        Math.floor(
+          (Number(c['2013']) +
+            Number(c['2014']) +
+            Number(c['2015']) +
+            Number(c['2016']) +
+            Number(c['2017']) +
+            Number(c['2018']) +
+            Number(c['2019']) +
+            Number(c['2020']) +
+            Number(c['2021'])) /
+            9,
+        )
+      ).toFixed(2),
+    ),
+  }))
 
   const stateWithMostKillings = Math.max(
     ...Object.values(Object.keys(states).map(s => dataPerStateByParty[states[s]].total)),
@@ -124,6 +144,11 @@ export const Map: React.FC = () => {
       pathSelectedState = d3.geoPath().projection(projectionSelectedState)
     }
 
+    const colorScale = d3
+      .scaleQuantize()
+      .domain([0, Math.floor(Math.max(...killPercent.map(kp => kp.ratio)) + 1)])
+      .range([0.2, 0.4, 0.6, 0.8, 1])
+
     svg
       .append('div')
       .attr('id', 'svg')
@@ -159,9 +184,12 @@ export const Map: React.FC = () => {
           ? theme.colors.red
           : theme.colors.blue,
       )
-      .style(
-        'opacity',
-        d => data.filter(killing => killing.state === states[d.properties.name]).length / stateWithMostKillings + 0.2,
+      .style('opacity', d =>
+        colorScale(
+          killPercent.filter(
+            kp => kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
+          )[0].ratio,
+        ),
       )
       .style('cursor', selectedState.state === '' ? 'pointer' : 'default')
       .on('mouseover', function () {
