@@ -80,8 +80,8 @@ export const ScatterPlot: React.FC = () => {
     .range([dimensions.margin.left, dimensions.width - dimensions.margin.right])
   const yScale = d3
     .scaleLinear()
-    .domain([0, Math.max(...dataOriginal.map(d => Number(d.hhincome_median_census_tract)))])
-    .range([dimensions.height, 0])
+    .domain([0, Math.max(...dataOriginal.map(d => Number(d.hhincome_median_census_tract))) + 5000])
+    .range([dimensions.height, dimensions.margin.bottom])
 
   useEffect(() => {
     const priceStrFormatter = new Intl.NumberFormat('en-US', {
@@ -203,8 +203,7 @@ export const ScatterPlot: React.FC = () => {
       >
         {focused && (
           <h1 className={classes.question}>
-            Is there a correlation between the average household income in the area a police killing happened and the
-            victims age?
+            Are killings' area income and victims' age related?
           </h1>
         )}
         <svg ref={ref} />
