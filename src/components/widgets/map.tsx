@@ -193,7 +193,8 @@ export const Map: React.FC = () => {
         }
       })
       .on('click', function (_, d) {
-        selectedState.setSelected(d.properties.name)
+        if (selectedState.state === '') selectedState.setSelected(d.properties.name)
+        else selectedState.setSelected('')
       })
 
     const labels = svg.append('g').attr('id', 'labels')
@@ -225,7 +226,8 @@ export const Map: React.FC = () => {
         }
       })
       .on('click', function (e, d) {
-        selectedState.setSelected(d.properties.name)
+        if (selectedState.state === '') selectedState.setSelected(d.properties.name)
+        else selectedState.setSelected('')
       })
   }, [
     data,
@@ -246,17 +248,6 @@ export const Map: React.FC = () => {
     <div className={classes.container}>
       <svg ref={ref} />
       <div className={classes.text}>police killings in different states</div>
-      {selectedState.state !== '' && (
-        <div
-          className={classes.resetButton}
-          onClick={() => {
-            selectedState.setSelected('')
-            setHoveredState('')
-          }}
-        >
-          Reset
-        </div>
-      )}
     </div>
   )
 }
