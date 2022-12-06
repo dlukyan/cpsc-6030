@@ -67,6 +67,7 @@ export const GenderIncomeBarchart: React.FC = () => {
   const ref = useRef(null)
 
   let data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
+  const dataOriginal = data
   const genders = new Set(data.map(d => d.gender))
   if (selectedState.state !== '')
     data = data.filter(d => d.state === censusData.find(s => s.state === selectedState.state)?.state_code)
@@ -84,9 +85,13 @@ export const GenderIncomeBarchart: React.FC = () => {
 
   const xScale = d3
     .scaleLinear()
-    .domain([0, Math.max(...data.map(d => Number(d.hhincome_median_census_tract)))])
+    .domain([0, Math.max(...dataOriginal.map(d => Number(d.hhincome_median_census_tract)))])
     .range([dimensions.margin.left, dimensions.width - dimensions.margin.right])
-  const yScale = d3.scaleBand().domain(genders).range([dimensions.height, dimensions.margin.bottom]).padding(0.1)
+
+  const yScale = d3.scaleBand()
+    .domain(genders)
+    .range([dimensions.height - dimensions.margin.bottom * 1.5, dimensions.margin.bottom])
+    .padding(0.1)
 
   useEffect(() => {
     const priceStrFormatter = new Intl.NumberFormat('en-US', {
@@ -106,10 +111,16 @@ export const GenderIncomeBarchart: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .call(d3.axisBottom(xScale).tickFormat(d => (d === 0 ? d : d / 1000 + 'K')))
-      .attr('transform', 'translate(0, ' + (dimensions.height - dimensions.margin.bottom) + ')')
+      .attr('transform', 'translate(0, ' + (dimensions.height - dimensions.margin.bottom * 2.5) + ')')
       .selectAll('text')
       .attr('transform', 'translate(' + dimensions.margin.right + ', 4)')
       .style('text-anchor', 'end')
+
+    svg
+      .append('text')
+      .attr('transform', 'translate(' + dimensions.width / 2.5 + ' ,' + (dimensions.height - dimensions.margin.top) + ')')
+      .style('font-size', 14)
+      .text("Location household average income")
 
     svg
       .append('g')
@@ -136,7 +147,7 @@ export const GenderIncomeBarchart: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
-      .attr('height', () => yScale.bandwidth() / 2)
+      .attr('height', () => yScale.bandwidth() / 1.5)
       .attr('width', () => 1)
       .attr('fill', d => d.congressperson_party === 'Democrat' ? theme.colors.blue : theme.colors.red)
       .on('mouseover', function (e, d) {	
