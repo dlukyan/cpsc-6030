@@ -192,14 +192,16 @@ export const Map: React.FC = () => {
         ),
       )
       .style('cursor', selectedState.state === '' ? 'pointer' : 'default')
-      .on('mouseover', function () {
+      .on('mouseover', function (_, d) {
         if (selectedState.state === '') {
+          svg.selectAll(`path#state-${d.id}`).style('stroke', 'black').style('stroke-opacity', 1)
           // d3.selectAll('.state').style('opacity', 0.5)
           // d3.select(this).style('fill', theme.colors.red).style('opacity', 1)
         }
       })
-      .on('mouseout', function () {
+      .on('mouseout', function (_, d) {
         if (selectedState.state === '') {
+          svg.selectAll(`path#state-${d.id}`).style('stroke', 'white')
           // d3.selectAll('.state').style('opacity', 1)
           // d3.select(this).style('fill', theme.colors.blue)
         }
@@ -230,6 +232,7 @@ export const Map: React.FC = () => {
         .on('mouseover', function (_, d) {
           if (selectedState.state === '') {
             console.log(_, d)
+            svg.selectAll(`path#state-${d.id}`).style('stroke', 'black').style('stroke-opacity', 1)
             // d3.selectAll('.state').style('opacity', 0.5)
             // svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.red).style('opacity', 1)
           }
