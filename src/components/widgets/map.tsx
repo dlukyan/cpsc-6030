@@ -4,7 +4,7 @@ import mapData from '../../data/us-states.json'
 import censusData from '../../data/census.json'
 import votesData from '../../data/votes_cleaned.json'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createUseStyles } from 'react-jss'
 import { theme, Theme } from '../../theme'
 import { PoliceViolenceDataPoint } from '../../types/police-violence'
@@ -48,17 +48,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     padding: 10,
     cursor: 'pointer',
   },
-  stateName: {
-    ...theme.typography.larger,
-    color: theme.colors.primary,
-    fontWeight: 'bold',
-  },
 }))
 
 export const Map: React.FC = () => {
   const classes = useStyles()
   const ref = useRef(null)
   const selectedState = useSelectedState()
+  const [hoveredState, setHoveredState] = useState<string>('')
 
   const data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
   const dataPerStateByParty: { [stateCode: string]: { total: number; d: number; r: number } } = {}
@@ -148,14 +144,20 @@ export const Map: React.FC = () => {
       .append('g')
       .attr('id', 'map')
       .selectAll('path')
-      .data(pathsForMap.features)
+      .data(
+        hoveredState === ''
+          ? pathsForMap.features
+          : [
+              ...pathsForMap.features.filter(f => f.properties.name !== hoveredState),
+              pathsForMap.features.find(f => f.properties.name === hoveredState),
+            ],
+      )
       .join('path')
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .attr('d', d => path(d))
       .attr('class', 'state')
       .attr('id', d => `state-${d.id}`)
-      .style('stroke', 'white')
       .style('fill', d => {
         if (selectedState.state === '' || d.properties.name === selectedState.state)
           return votes.filter(
@@ -177,24 +179,21 @@ export const Map: React.FC = () => {
           )[0].ratio,
         ),
       )
+      .style('stroke', d => (d.properties.name === hoveredState ? 'black' : 'white'))
+      .style('stroke-opacity', 1)
       .style('cursor', 'pointer')
       .on('mouseover', function (_, d) {
         if (selectedState.state === '') {
-          svg.selectAll(`path#state-${d.id}`).style('stroke', 'black').style('stroke-opacity', 1)
-          // d3.selectAll('.state').style('opacity', 0.5)
-          // d3.select(this).style('fill', theme.colors.red).style('opacity', 1)
+          setHoveredState(d.properties.name)
         }
       })
-      .on('mouseout', function (_, d) {
+      .on('mouseout', function () {
         if (selectedState.state === '') {
-          svg.selectAll(`path#state-${d.id}`).style('stroke', 'white')
-          // d3.selectAll('.state').style('opacity', 1)
-          // d3.select(this).style('fill', theme.colors.blue)
+          setHoveredState('')
         }
       })
-      .on('click', function (e, d) {
+      .on('click', function (_, d) {
         selectedState.setSelected(d.properties.name)
-        svg.selectAll('path.state').style('fill', theme.colors.darkGray)
       })
 
     const labels = svg.append('g').attr('id', 'labels')
@@ -217,26 +216,23 @@ export const Map: React.FC = () => {
       .style('cursor', 'pointer')
       .on('mouseover', function (_, d) {
         if (selectedState.state === '') {
-          svg.selectAll(`path#state-${d.id}`).style('stroke', 'black').style('stroke-opacity', 1)
-          // d3.selectAll('.state').style('opacity', 0.5)
-          // svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.red).style('opacity', 1)
+          setHoveredState(d.properties.name)
         }
       })
-      .on('mouseout', function (_, d) {
+      .on('mouseout', function () {
         if (selectedState.state === '') {
-          console.log(_, d)
-          // svg.selectAll(`path#state-${d.id}`).style('fill', theme.colors.blue).style('opacity', 1)
+          setHoveredState('')
         }
       })
       .on('click', function (e, d) {
         selectedState.setSelected(d.properties.name)
-        svg.selectAll('path.state').style('fill', theme.colors.darkGray)
       })
   }, [
     data,
     dataPerStateByParty,
     dimensions.height,
     dimensions.width,
+    hoveredState,
     killPercent,
     pData,
     pathsForMap.features,
@@ -249,11 +245,15 @@ export const Map: React.FC = () => {
   return (
     <div className={classes.container}>
       <svg ref={ref} />
-      <div className={selectedState.state === '' ? classes.text : classes.stateName}>
-        {selectedState.state === '' ? 'police killings in different states' : selectedState.state}
-      </div>
+      <div className={classes.text}>police killings in different states</div>
       {selectedState.state !== '' && (
-        <div className={classes.resetButton} onClick={() => selectedState.setSelected('')}>
+        <div
+          className={classes.resetButton}
+          onClick={() => {
+            selectedState.setSelected('')
+            setHoveredState('')
+          }}
+        >
           Reset
         </div>
       )}
