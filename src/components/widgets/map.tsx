@@ -147,7 +147,7 @@ export const Map: React.FC = () => {
     const colorScale = d3
       .scaleQuantize()
       .domain([0, Math.floor(Math.max(...killPercent.map(kp => kp.ratio)) + 1)])
-      .range([0.2, 0.4, 0.6, 0.8, 1])
+      .range([0.4, 0.6, 0.8, 1])
 
     svg
       .append('div')
