@@ -12,6 +12,34 @@ import { CensusDataPoint } from '../../types/census'
 import { VotesDataPoint } from '../../types/votes'
 import { useSelectedState } from '../../context/selected-state-context'
 
+function hex2rgb(hex) {
+  return {
+    r: parseInt(hex.length == 4 ? hex[1] + hex[1] : hex[1] + hex[2], 16),
+    g: parseInt(hex.length == 4 ? hex[2] + hex[2] : hex[3] + hex[4], 16),
+    b: parseInt(hex.length == 4 ? hex[3] + hex[3] : hex[5] + hex[6], 16),
+  }
+}
+
+function rgb2hex(rgb) {
+  return (
+    '#' +
+    rgb.r.toString(16).padStart(2, '0') +
+    rgb.g.toString(16).padStart(2, '0') +
+    rgb.b.toString(16).padStart(2, '0')
+  )
+}
+
+function colorFromOpacity(color, opacity) {
+  let rgb = hex2rgb(color)
+  rgb = {
+    r: Math.floor(255 - opacity * (255 - rgb.r)),
+    g: Math.floor(255 - opacity * (255 - rgb.g)),
+    b: Math.floor(255 - opacity * (255 - rgb.b)),
+  }
+  console.log(rgb)
+  return rgb2hex(rgb)
+}
+
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     ...theme.common.vizContainer('3 / 4 / 8 / 13', '', 1, { borderTop: 'none' }),
@@ -126,10 +154,56 @@ export const Map: React.FC = () => {
       .translate([dimensions.width / 2, dimensions.height / 3])
     const path = d3.geoPath().projection(projection)
 
+    const opacities = [0.4, 0.6, 0.8, 1]
+
     const colorScale = d3
       .scaleQuantize()
       .domain([0, Math.floor(Math.max(...killPercent.map(kp => kp.ratio)) + 1)])
-      .range([0.4, 0.6, 0.8, 1])
+      .range(opacities)
+
+    svg
+      .selectAll('mydots')
+      .data(opacities)
+      .enter()
+      .append('rect')
+      .attr('x', dimensions.width - 200)
+      .attr('y', function (d, i) {
+        return 290 + i * 25
+      }) // 100 is where the first dot appears. 25 is the distance between dots
+      .attr('width', 10)
+      .attr('height', 20)
+      .style('fill', d => colorFromOpacity(theme.colors.blue, d))
+
+    svg
+      .selectAll('mydots')
+      .data(opacities)
+      .enter()
+      .append('rect')
+      .attr('x', dimensions.width - 190)
+      .attr('y', function (d, i) {
+        return 290 + i * 25
+      }) // 100 is where the first dot appears. 25 is the distance between dots
+      .attr('width', 10)
+      .attr('height', 20)
+      .style('fill', d => colorFromOpacity(theme.colors.red, d))
+
+    svg
+      .selectAll('mylabels')
+      .data(opacities.map((o, i) => '≥ ' + (i / 4) * Math.floor(Math.max(...killPercent.map(kp => kp.ratio)) + 1)))
+      .enter()
+      .append('text')
+      .attr('x', dimensions.width - 190 + 20 * 1.2)
+      .attr('y', function (d, i) {
+        return 290 + i * 25 + 11
+      }) // 100 is where the first dot appears. 25 is the distance between dots
+      // .style("fill", function(d){ return color(d)})
+      .text(function (d) {
+        return d
+      })
+      .attr('text-anchor', 'left')
+      .style('alignment-baseline', 'middle')
+      .style('font-size', theme.typography.small.fontSize)
+      .style('color', theme.colors.darkGray)
 
     svg
       .append('div')
@@ -247,7 +321,7 @@ export const Map: React.FC = () => {
   return (
     <div className={classes.container}>
       <svg ref={ref} />
-      <div className={classes.text}>police killings in different states</div>
+      <div className={classes.text}>killed per 1,000,000 people</div>
     </div>
   )
 }
