@@ -271,8 +271,8 @@ export const Map: React.FC = () => {
           setHoveredState(d.properties.name)
         }
         d3.select('#tooltip')
-            .style('left', _.pageX + 'px')
-            .style('top', _.pageY + 'px')
+            .style('left', (_.pageX + 10) + 'px')
+            .style('top', (_.pageY + 10) + 'px')
             .style('opacity', 1)
             .html((d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington') + '<br/>' + 'Killed per million: ' + killPercent.filter(
               kp => kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
@@ -318,8 +318,8 @@ export const Map: React.FC = () => {
           setHoveredState(d.properties.name)
         }
         d3.select('#tooltip')
-            .style('left', _.pageX + 'px')
-            .style('top', _.pageY + 'px')
+            .style('left', (_.pageX + 10) + 'px')
+            .style('top', (_.pageY + 10) + 'px')
             .style('opacity', 1)
             .html((d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington') + '<br/>' + 'Killed per million: ' + killPercent.filter(
               kp => kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
