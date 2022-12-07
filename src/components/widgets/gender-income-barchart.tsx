@@ -170,7 +170,7 @@ export const GenderIncomeBarchart: React.FC = () => {
           d3.select('#tooltip')
             .style('opacity', 0)
           d3.select(this)
-            .attr('height', () => yScale.bandwidth() / 2)
+            .attr('height', () => yScale.bandwidth() / 1.5)
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
