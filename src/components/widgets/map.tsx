@@ -154,7 +154,7 @@ export const Map: React.FC = () => {
       .translate([dimensions.width / 2, dimensions.height / 3])
     const path = d3.geoPath().projection(projection)
 
-    const opacities = [0.4, 0.6, 0.8, 1]
+    const opacities = [0.3, 0.43, 0.66, 1]
 
     const colorScale = d3
       .scaleQuantize()
