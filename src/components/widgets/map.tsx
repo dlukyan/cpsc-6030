@@ -205,6 +205,16 @@ export const Map: React.FC = () => {
       .style('font-size', theme.typography.small.fontSize)
       .style('color', theme.colors.darkGray)
 
+    d3.select('body')
+      .append('div')
+      .attr('id', 'tooltip')
+      .attr('style', 'position: absolute; opacity: 0; z-index: 1000')
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+
     svg
       .append('div')
       .attr('id', 'svg')
@@ -260,11 +270,25 @@ export const Map: React.FC = () => {
         if (selectedState.state === '') {
           setHoveredState(d.properties.name)
         }
+        d3.select('#tooltip')
+            .style('left', _.pageX + 'px')
+            .style('top', _.pageY + 'px')
+            .style('opacity', 1)
+            .html((d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington') + '<br/>' + 'Killed per million: ' + killPercent.filter(
+              kp => kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
+            )[0].ratio)
       })
       .on('mouseout', function () {
         if (selectedState.state === '') {
           setHoveredState('')
         }
+        d3.select('#tooltip')
+            .style('opacity', 0)
+      })
+      .on('mousemove', function(e, d) {
+        d3.select('#tooltip')
+          .style('left', (e.pageX + 10) + 'px')
+          .style('top', (e.pageY + 10) + 'px')
       })
       .on('click', function (_, d) {
         if (selectedState.state === '') selectedState.setSelected(d.properties.name)
@@ -293,11 +317,23 @@ export const Map: React.FC = () => {
         if (selectedState.state === '') {
           setHoveredState(d.properties.name)
         }
+        d3.select('#tooltip')
+            .style('left', _.pageX + 'px')
+            .style('top', _.pageY + 'px')
+            .style('opacity', 1)
+            .html((d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington') + '<br/>' + 'Killed per million: ' + killPercent.filter(
+              kp => kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
+            )[0].ratio)
       })
       .on('mouseout', function () {
         if (selectedState.state === '') {
           setHoveredState('')
         }
+      })
+      .on('mousemove', function(e, d) {
+        d3.select('#tooltip')
+          .style('left', (e.pageX + 10) + 'px')
+          .style('top', (e.pageY + 10) + 'px')
       })
       .on('click', function (e, d) {
         if (selectedState.state === '') selectedState.setSelected(d.properties.name)
