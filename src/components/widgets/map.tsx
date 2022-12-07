@@ -172,7 +172,7 @@ export const Map: React.FC = () => {
       }) // 100 is where the first dot appears. 25 is the distance between dots
       .attr('width', 10)
       .attr('height', 20)
-      .style('fill', d => colorFromOpacity(theme.colors.blue, d))
+      .style('fill', d => colorFromOpacity(selectedState.state === '' ? theme.colors.blue : theme.colors.darkGray, d))
 
     svg
       .selectAll('mydots')
@@ -185,7 +185,7 @@ export const Map: React.FC = () => {
       }) // 100 is where the first dot appears. 25 is the distance between dots
       .attr('width', 10)
       .attr('height', 20)
-      .style('fill', d => colorFromOpacity(theme.colors.red, d))
+      .style('fill', d => colorFromOpacity(selectedState.state === '' ? theme.colors.red : theme.colors.darkGray, d))
 
     svg
       .selectAll('mylabels')
