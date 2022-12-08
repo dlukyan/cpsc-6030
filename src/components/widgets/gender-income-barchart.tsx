@@ -56,14 +56,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primary,
     letterSpacing: 1.02,
   },
-  hint: {
-    position: 'absolute',
-    zIndex: 10000,
-    bottom: 10,
-    ...theme.typography.small,
-    left: '50%',
-    transform: 'translateX(-50%)',
-  },
 }))
 
 export const GenderIncomeBarchart: React.FC = () => {
@@ -236,11 +228,6 @@ export const GenderIncomeBarchart: React.FC = () => {
         <svg ref={ref} />
       </div>
       {focused && <Overlay onClick={() => setFocused(false)} />}
-      {focused && (
-        <div className={classes.hint}>
-          <b>*</b>This democrat and republican data is from the county level
-        </div>
-      )}
     </>
   )
 }

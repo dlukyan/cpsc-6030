@@ -27,6 +27,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     ...theme.typography.small,
     left: '50%',
     transform: 'translateX(-50%)',
+    zIndex: 10000,
   },
 }))
 
