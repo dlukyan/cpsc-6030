@@ -218,7 +218,7 @@ export const ArcChart: React.FC<{
       <svg ref={ref} />
       <div className={classes.text}>
         {text} with <b style={{ color: theme.colors.blue }}>{democraticPercentage}%</b> happening in democratic areas,
-        and <b style={{ color: theme.colors.red }}>{republicanPercentage}%</b> happening in republican areas.
+        and <b style={{ color: theme.colors.red }}>{republicanPercentage}%</b> happening in republican areas<b>*</b>.
       </div>
     </div>
   )

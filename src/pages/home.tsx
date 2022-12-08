@@ -21,6 +21,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   title: {
     ...theme.typography.largest,
   },
+  hint: {
+    position: 'absolute',
+    bottom: 0,
+    ...theme.typography.small,
+    left: '50%',
+    transform: 'translateX(-50%)',
+  },
 }))
 
 export const HomePage: React.FC = () => {
@@ -36,6 +43,9 @@ export const HomePage: React.FC = () => {
       <FleeArc />
       <AttackArc />
       <PartyKillingsCircle />
+      <div className={classes.hint}>
+        <b>*</b>This democrat and republican data is from the county level
+      </div>
     </div>
   )
 }

@@ -182,20 +182,26 @@ export const PartyKillingsCircle: React.FC = () => {
         onClick={() => (focused ? null : setFocused(true))}
       >
         {focused && (
-          <h1 className={classes.question}>How many police killings happen in democratic areas vs republican areas?</h1>
+          <h1 className={classes.question}>
+            How many police killings happen in democratic areas vs republican counties?
+          </h1>
         )}
         <svg ref={ref} />
-        {!focused && <div className={classes.text}>police killing location&apos;s party dominance</div>}
+        {!focused && (
+          <div className={classes.text}>
+            police killing location<b>*</b>&nbsp;party dominance
+          </div>
+        )}
         {focused && <X onClick={() => setFocused(false)} />}
         {focused && (
           <div className={classes.percentages}>
             <div className={classNames(classes.party, classes.dem)}>
               <div className={classNames(classes.percentage, classes.dem)}>{pData.Democrats.toFixed(2)}%</div>
-              <div>Democratic Areas</div>
+              <div>Democratic Counties</div>
             </div>
             <div className={classNames(classes.party, classes.rep)}>
               <div className={classNames(classes.percentage, classes.rep)}>{pData.Republicans.toFixed(2)}%</div>
-              <div>Republican Areas</div>
+              <div>Republican Counties</div>
             </div>
           </div>
         )}

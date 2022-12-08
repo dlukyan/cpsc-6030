@@ -49,6 +49,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primary,
     letterSpacing: 1.02,
   },
+  hint: {
+    position: 'absolute',
+    bottom: 80,
+    zIndex: 10000,
+    ...theme.typography.small,
+    right: '0%',
+    transform: 'translateX(-50%)',
+  },
 }))
 
 export const ScatterPlot: React.FC = () => {
@@ -59,7 +67,7 @@ export const ScatterPlot: React.FC = () => {
   const ref = useRef(null)
 
   let data: PoliceViolenceDataPoint[] = rawData as unknown as PoliceViolenceDataPoint[]
-  let dataOriginal = data
+  const dataOriginal = data
   if (selectedState.state !== '')
     data = data.filter(d => d.state === censusData.find(s => s.state === selectedState.state)?.state_code)
 
@@ -107,8 +115,10 @@ export const ScatterPlot: React.FC = () => {
     svg
       .append('text')
       .attr('transform', 'translate(' + dimensions.width / 2 + ' ,' + (dimensions.height - dimensions.margin.top) + ')')
-      .style('font-size', 14)
       .text("Victim's age")
+      .style('font-size', 10)
+      .style('font-family', '"Rubik", sans-serif')
+      .style('color', theme.colors.darkGray)
 
     svg
       .append('g')
@@ -121,11 +131,11 @@ export const ScatterPlot: React.FC = () => {
       .append('div')
       .attr('id', 'tooltip')
       .attr('style', 'position: absolute; opacity: 0; z-index: 1000')
-      .style("background-color", "white")
-      .style("border", "solid")
-      .style("border-width", "1px")
-      .style("border-radius", "5px")
-      .style("padding", "5px")
+      .style('background-color', 'white')
+      .style('border', 'solid')
+      .style('border-width', '1px')
+      .style('border-radius', '5px')
+      .style('padding', '5px')
 
     svg
       .append('text')
@@ -140,6 +150,9 @@ export const ScatterPlot: React.FC = () => {
       .style('text-anchor', 'middle')
       .style('font-size', 14)
       .text('Location household average income')
+      .style('font-size', 10)
+      .style('font-family', '"Rubik", sans-serif')
+      .style('color', theme.colors.darkGray)
 
     svg
       .append('g')
@@ -154,7 +167,7 @@ export const ScatterPlot: React.FC = () => {
         return yScale(d.hhincome_median_census_tract) - dimensions.margin.bottom
       })
       .attr('r', focused ? 2.5 : 1.5)
-      .attr('fill', d => d.congressperson_party === 'Democrat' ? theme.colors.blue : theme.colors.red)
+      .attr('fill', d => (d.congressperson_party === 'Democrat' ? theme.colors.blue : theme.colors.red))
       .on('mouseover', function (_, d) {
         if (focused) {
           d3.select(this).attr('r', 7)
@@ -163,22 +176,30 @@ export const ScatterPlot: React.FC = () => {
             .style('left', _.pageX + 'px')
             .style('top', _.pageY + 'px')
             .style('opacity', 1)
-            .html('Name: ' + d.name + '<br/>Age: ' + d.age + '<br/>Date: ' + new Date(d.date).toDateString() + '<br/>Area income: ' + priceStrFormatter.format(d.hhincome_median_census_tract))
+            .html(
+              'Name: ' +
+                d.name +
+                '<br/>Age: ' +
+                d.age +
+                '<br/>Date: ' +
+                new Date(d.date).toDateString() +
+                '<br/>Area income: ' +
+                priceStrFormatter.format(d.hhincome_median_census_tract),
+            )
         }
       })
       .on('mouseout', function () {
         if (focused) {
           d3.select(this).attr('r', focused ? 2.5 : 1.5)
 
-          d3.select('#tooltip')
-            .style('opacity', 0)
+          d3.select('#tooltip').style('opacity', 0)
         }
       })
-      .on('mousemove', function(e, d) {
+      .on('mousemove', function (e) {
         if (focused)
           d3.select('#tooltip')
-            .style('left', (e.pageX + 10) + 'px')
-            .style('top', (e.pageY + 10) + 'px')
+            .style('left', e.pageX + 10 + 'px')
+            .style('top', e.pageY + 10 + 'px')
       })
       .transition()
       .duration(1500)
@@ -201,15 +222,16 @@ export const ScatterPlot: React.FC = () => {
         className={classNames(classes.container, focused ? classes.containerFocused : classes.containerUnfocused)}
         onClick={() => (!focused ? setFocused(true) : null)}
       >
-        {focused && (
-          <h1 className={classes.question}>
-            Are killings' area income and victims' age related?
-          </h1>
-        )}
+        {focused && <h1 className={classes.question}>Are killings&apos; area income and victims&apos; age related?</h1>}
         <svg ref={ref} />
         {focused && <X onClick={() => setFocused(false)} />}
       </div>
       {focused && <Overlay onClick={() => setFocused(false)} />}
+      {focused && (
+        <div className={classes.hint}>
+          <b>*</b>This democrat and republican data is from the county level
+        </div>
+      )}
     </>
   )
 }

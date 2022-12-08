@@ -12,7 +12,7 @@ import { CensusDataPoint } from '../../types/census'
 import { VotesDataPoint } from '../../types/votes'
 import { useSelectedState } from '../../context/selected-state-context'
 
-function hex2rgb(hex) {
+function hex2rgb(hex: string) {
   return {
     r: parseInt(hex.length == 4 ? hex[1] + hex[1] : hex[1] + hex[2], 16),
     g: parseInt(hex.length == 4 ? hex[2] + hex[2] : hex[3] + hex[4], 16),
@@ -20,7 +20,7 @@ function hex2rgb(hex) {
   }
 }
 
-function rgb2hex(rgb) {
+function rgb2hex(rgb: { r: number; g: number; b: number }) {
   return (
     '#' +
     rgb.r.toString(16).padStart(2, '0') +
@@ -29,14 +29,13 @@ function rgb2hex(rgb) {
   )
 }
 
-function colorFromOpacity(color, opacity) {
+function colorFromOpacity(color: string, opacity: number) {
   let rgb = hex2rgb(color)
   rgb = {
     r: Math.floor(255 - opacity * (255 - rgb.r)),
     g: Math.floor(255 - opacity * (255 - rgb.g)),
     b: Math.floor(255 - opacity * (255 - rgb.b)),
   }
-  console.log(rgb)
   return rgb2hex(rgb)
 }
 
@@ -163,25 +162,37 @@ export const Map: React.FC = () => {
 
     svg
       .selectAll('mydots')
-      .data(opacities)
+      .data([1, 0, ...opacities])
       .enter()
       .append('rect')
-      .attr('x', dimensions.width - 200)
+      .attr('x', dimensions.width - 120)
       .attr('y', function (d, i) {
-        return 290 + i * 25
+        return 230 + i * 25
       }) // 100 is where the first dot appears. 25 is the distance between dots
       .attr('width', 10)
       .attr('height', 20)
       .style('fill', d => colorFromOpacity(selectedState.state === '' ? theme.colors.blue : theme.colors.darkGray, d))
+      .on('mouseover', function (_) {
+        d3.select('#tooltip')
+          .style('left', _.pageX + 10 + 'px')
+          .style('top', _.pageY + 10 + 'px')
+          .style('opacity', 1)
+          .html(
+            '<p style="font-size: 10px; max-width: 200px"><b style="color: red">Red</b> and <b style="color: blue">blue</b> states correspond to those won by <b style="color: red">republicans</b> and <b style="color: blue">democrats</b> in the 2020 election.</p>',
+          )
+      })
+      .on('mouseout', function () {
+        d3.select('#tooltip').style('opacity', 0)
+      })
 
     svg
       .selectAll('mydots')
-      .data(opacities)
+      .data([1, 0, ...opacities])
       .enter()
       .append('rect')
-      .attr('x', dimensions.width - 190)
+      .attr('x', dimensions.width - 130)
       .attr('y', function (d, i) {
-        return 290 + i * 25
+        return 230 + i * 25
       }) // 100 is where the first dot appears. 25 is the distance between dots
       .attr('width', 10)
       .attr('height', 20)
@@ -189,12 +200,16 @@ export const Map: React.FC = () => {
 
     svg
       .selectAll('mylabels')
-      .data(opacities.map((o, i) => '≥ ' + (i / 4) * Math.floor(Math.max(...killPercent.map(kp => kp.ratio)) + 1)))
+      .data([
+        'R / D',
+        '',
+        ...opacities.map((o, i) => '≥ ' + (i / 4) * Math.floor(Math.max(...killPercent.map(kp => kp.ratio)) + 1)),
+      ])
       .enter()
       .append('text')
-      .attr('x', dimensions.width - 190 + 20 * 1.2)
+      .attr('x', dimensions.width - 120 + 20 * 1.2)
       .attr('y', function (d, i) {
-        return 290 + i * 25 + 11
+        return 230 + i * 25 + 11
       }) // 100 is where the first dot appears. 25 is the distance between dots
       // .style("fill", function(d){ return color(d)})
       .text(function (d) {
@@ -204,16 +219,30 @@ export const Map: React.FC = () => {
       .style('alignment-baseline', 'middle')
       .style('font-size', theme.typography.small.fontSize)
       .style('color', theme.colors.darkGray)
+      .on('mouseover', function (_, d) {
+        if (d === 'R / D') {
+          d3.select('#tooltip')
+            .style('left', _.pageX + 10 + 'px')
+            .style('top', _.pageY + 10 + 'px')
+            .style('opacity', 1)
+            .html(
+              '<p style="font-size: 10px; max-width: 200px"><b style="color: red">Red</b> and <b style="color: blue">blue</b> states correspond to those won by <b style="color: red">republicans</b> and <b style="color: blue">democrats</b> in the 2020 election.</p>',
+            )
+        }
+      })
+      .on('mouseout', function () {
+        d3.select('#tooltip').style('opacity', 0)
+      })
 
     d3.select('body')
       .append('div')
       .attr('id', 'tooltip')
       .attr('style', 'position: absolute; opacity: 0; z-index: 1000')
-      .style("background-color", "white")
-      .style("border", "solid")
-      .style("border-width", "1px")
-      .style("border-radius", "5px")
-      .style("padding", "5px")
+      .style('background-color', 'white')
+      .style('border', 'solid')
+      .style('border-width', '1px')
+      .style('border-radius', '5px')
+      .style('padding', '5px')
 
     svg
       .append('div')
@@ -241,15 +270,23 @@ export const Map: React.FC = () => {
       // @ts-ignore
       .attr('d', d => path(d))
       .attr('class', 'state')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .attr('id', d => `state-${d.id}`)
       .style('fill', d => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (selectedState.state === '' || d.properties.name === selectedState.state)
           return votes.filter(
             s =>
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               s.state_code === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
           )[0].rep >
             votes.filter(
               s =>
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 s.state_code === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
             )[0].dem
             ? theme.colors.red
@@ -259,38 +296,55 @@ export const Map: React.FC = () => {
       .style('opacity', d =>
         colorScale(
           killPercent.filter(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             kp => kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
           )[0].ratio,
         ),
       )
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .style('stroke', d => (d.properties.name === hoveredState ? 'black' : 'white'))
       .style('stroke-opacity', 1)
       .style('cursor', 'pointer')
       .on('mouseover', function (_, d) {
         if (selectedState.state === '') {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           setHoveredState(d.properties.name)
         }
         d3.select('#tooltip')
-            .style('left', (_.pageX + 10) + 'px')
-            .style('top', (_.pageY + 10) + 'px')
-            .style('opacity', 1)
-            .html((d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington') + '<br/>' + 'Killed per million: ' + killPercent.filter(
-              kp => kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
-            )[0].ratio)
+          .style('left', _.pageX + 10 + 'px')
+          .style('top', _.pageY + 10 + 'px')
+          .style('opacity', 1)
+          .html(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            (d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington') +
+              '<br/>' +
+              'Killed per million: ' +
+              killPercent.filter(
+                kp =>
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
+              )[0].ratio,
+          )
       })
       .on('mouseout', function () {
         if (selectedState.state === '') {
           setHoveredState('')
         }
-        d3.select('#tooltip')
-            .style('opacity', 0)
+        d3.select('#tooltip').style('opacity', 0)
       })
-      .on('mousemove', function(e, d) {
+      .on('mousemove', function (e) {
         d3.select('#tooltip')
-          .style('left', (e.pageX + 10) + 'px')
-          .style('top', (e.pageY + 10) + 'px')
+          .style('left', e.pageX + 10 + 'px')
+          .style('top', e.pageY + 10 + 'px')
       })
       .on('click', function (_, d) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (selectedState.state === '') selectedState.setSelected(d.properties.name)
         else selectedState.setSelected('')
       })
@@ -318,22 +372,28 @@ export const Map: React.FC = () => {
           setHoveredState(d.properties.name)
         }
         d3.select('#tooltip')
-            .style('left', (_.pageX + 10) + 'px')
-            .style('top', (_.pageY + 10) + 'px')
-            .style('opacity', 1)
-            .html((d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington') + '<br/>' + 'Killed per million: ' + killPercent.filter(
-              kp => kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
-            )[0].ratio)
+          .style('left', _.pageX + 10 + 'px')
+          .style('top', _.pageY + 10 + 'px')
+          .style('opacity', 1)
+          .html(
+            (d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington') +
+              '<br/>' +
+              'Killed per million: ' +
+              killPercent.filter(
+                kp =>
+                  kp.state === states[d.properties.name != 'District of Columbia' ? d.properties.name : 'Washington'],
+              )[0].ratio,
+          )
       })
       .on('mouseout', function () {
         if (selectedState.state === '') {
           setHoveredState('')
         }
       })
-      .on('mousemove', function(e, d) {
+      .on('mousemove', function (e) {
         d3.select('#tooltip')
-          .style('left', (e.pageX + 10) + 'px')
-          .style('top', (e.pageY + 10) + 'px')
+          .style('left', e.pageX + 10 + 'px')
+          .style('top', e.pageY + 10 + 'px')
       })
       .on('click', function (e, d) {
         if (selectedState.state === '') selectedState.setSelected(d.properties.name)

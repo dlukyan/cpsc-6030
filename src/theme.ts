@@ -194,6 +194,7 @@ export const useGlobalStyles = createUseStyles({
       margin: 0,
       height: '100%',
       ...baseTypography,
+      overflow: 'hidden',
     },
     '*, *::before, *::after': {
       boxSizing: 'border-box',

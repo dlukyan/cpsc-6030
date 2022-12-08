@@ -56,6 +56,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primary,
     letterSpacing: 1.02,
   },
+  hint: {
+    position: 'absolute',
+    zIndex: 10000,
+    bottom: 10,
+    ...theme.typography.small,
+    left: '50%',
+    transform: 'translateX(-50%)',
+  },
 }))
 
 export const GenderIncomeBarchart: React.FC = () => {
@@ -88,7 +96,8 @@ export const GenderIncomeBarchart: React.FC = () => {
     .domain([0, Math.max(...dataOriginal.map(d => Number(d.hhincome_median_census_tract)))])
     .range([dimensions.margin.left, dimensions.width - dimensions.margin.right])
 
-  const yScale = d3.scaleBand()
+  const yScale = d3
+    .scaleBand()
     .domain(genders)
     .range([dimensions.height - dimensions.margin.bottom * 1.5, dimensions.margin.bottom])
     .padding(0.1)
@@ -115,12 +124,20 @@ export const GenderIncomeBarchart: React.FC = () => {
       .selectAll('text')
       .attr('transform', 'translate(' + dimensions.margin.right + ', 4)')
       .style('text-anchor', 'end')
+      .style('font-size', 10)
+      .style('font-family', '"Rubik", sans-serif')
+      .style('color', theme.colors.darkGray)
 
     svg
       .append('text')
-      .attr('transform', 'translate(' + dimensions.width / 2.5 + ' ,' + (dimensions.height - dimensions.margin.top) + ')')
-      .style('font-size', 14)
-      .text("Location household average income")
+      .attr(
+        'transform',
+        'translate(' + dimensions.width / 2.5 + ' ,' + (dimensions.height - dimensions.margin.top - 5) + ')',
+      )
+      .style('font-size', 10)
+      .style('font-family', '"Rubik", sans-serif')
+      .style('color', theme.colors.darkGray)
+      .text('Location household average income')
 
     svg
       .append('g')
@@ -131,11 +148,11 @@ export const GenderIncomeBarchart: React.FC = () => {
       .append('div')
       .attr('id', 'tooltip')
       .attr('style', 'position: absolute; opacity: 0; z-index: 1000')
-      .style("background-color", "white")
-      .style("border", "solid")
-      .style("border-width", "1px")
-      .style("border-radius", "5px")
-      .style("padding", "5px")
+      .style('background-color', 'white')
+      .style('border', 'solid')
+      .style('border-width', '1px')
+      .style('border-radius', '5px')
+      .style('padding', '5px')
 
     svg
       .append('g')
@@ -149,14 +166,23 @@ export const GenderIncomeBarchart: React.FC = () => {
       .attr('y', d => yScale(d.gender) - (dimensions.margin.bottom - dimensions.margin.top))
       .attr('height', () => yScale.bandwidth() / 1.5)
       .attr('width', () => 1)
-      .attr('fill', d => d.congressperson_party === 'Democrat' ? theme.colors.blue : theme.colors.red)
-      .on('mouseover', function (e, d) {	
+      .attr('fill', d => (d.congressperson_party === 'Democrat' ? theme.colors.blue : theme.colors.red))
+      .on('mouseover', function (e, d) {
         if (focused) {
           d3.select('#tooltip')
             .style('left', e.pageX + 'px')
             .style('top', e.pageY + 'px')
             .style('opacity', 1)
-            .html('Name: ' + d.name + '<br/>Age: ' + d.age + '<br/>Date: ' + new Date(d.date).toDateString() + '<br/>Area income: ' + priceStrFormatter.format(d.hhincome_median_census_tract))
+            .html(
+              'Name: ' +
+                d.name +
+                '<br/>Age: ' +
+                d.age +
+                '<br/>Date: ' +
+                new Date(d.date).toDateString() +
+                '<br/>Area income: ' +
+                priceStrFormatter.format(d.hhincome_median_census_tract),
+            )
           d3.select(this)
             .attr('height', () => yScale.bandwidth())
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -167,8 +193,7 @@ export const GenderIncomeBarchart: React.FC = () => {
       })
       .on('mouseout', function () {
         if (focused) {
-          d3.select('#tooltip')
-            .style('opacity', 0)
+          d3.select('#tooltip').style('opacity', 0)
           d3.select(this)
             .attr('height', () => yScale.bandwidth() / 1.5)
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -177,13 +202,12 @@ export const GenderIncomeBarchart: React.FC = () => {
             .attr('width', () => 1)
         }
       })
-      .on('mousemove', function(e, d) {
+      .on('mousemove', function (e) {
         if (focused)
           d3.select('#tooltip')
-            .style('left', (e.pageX + 10) + 'px')
-            .style('top', (e.pageY + 10) + 'px')
+            .style('left', e.pageX + 10 + 'px')
+            .style('top', e.pageY + 10 + 'px')
       })
-
   }, [
     dimensions.height,
     dimensions.width,
@@ -212,6 +236,11 @@ export const GenderIncomeBarchart: React.FC = () => {
         <svg ref={ref} />
       </div>
       {focused && <Overlay onClick={() => setFocused(false)} />}
+      {focused && (
+        <div className={classes.hint}>
+          <b>*</b>This democrat and republican data is from the county level
+        </div>
+      )}
     </>
   )
 }
