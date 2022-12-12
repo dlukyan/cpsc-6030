@@ -149,7 +149,7 @@ export const ScatterPlot: React.FC = () => {
       )
       .style('text-anchor', 'middle')
       .style('font-size', 14)
-      .text('Location household average income')
+      .text('Location household median income')
       .style('font-size', 10)
       .style('font-family', '"Rubik", sans-serif')
       .style('color', theme.colors.darkGray)

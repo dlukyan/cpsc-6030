@@ -129,7 +129,7 @@ export const GenderIncomeBarchart: React.FC = () => {
       .style('font-size', 10)
       .style('font-family', '"Rubik", sans-serif')
       .style('color', theme.colors.darkGray)
-      .text('Location household average income')
+      .text('Location household median income')
 
     svg
       .append('g')
@@ -222,7 +222,7 @@ export const GenderIncomeBarchart: React.FC = () => {
         {focused && <X onClick={() => setFocused(false)} />}
         {focused && (
           <h1 className={classes.question}>
-            What is the distribution across sex and the average household income in the area a police killing happened?
+            What is the distribution across sex and the median household income in the area a police killing happened?
           </h1>
         )}
         <svg ref={ref} />
